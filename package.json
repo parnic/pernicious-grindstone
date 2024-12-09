@@ -1,0 +1,30 @@
+{
+  "private": true,
+  "name": "pernicions-grindstone",
+  "version": "1.0.0",
+  "scripts": {
+    "clean": "git clean -fdx --exclude .vscode --exclude TODO.md",
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "serve": "vite preview"
+  },
+  "author": "chris pickett <chris.pickett@tanium.com> (https://github.com/parnic)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/parnic/pernicions-grindstone.git"
+  },
+  "bugs": {
+    "url": "https://github.com/parnic/pernicions-grindstone/issues"
+  },
+  "homepage": "https://github.com/parnic/pernicions-grindstone",
+  "dependencies": {
+    "@excaliburjs/plugin-tiled": "^0.27.0",
+    "excalibur": "^0.27.0",
+    "typescript": "^5.1.6",
+    "vite": "4.4.4"
+  },
+  "devDependencies": {
+    "prettier": "^3.0.0"
+  }
+}
