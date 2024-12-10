@@ -3,9 +3,11 @@ import { Resources } from "./resource";
 import { GameScene } from "./scenes/game-scene";
 
 const engine = new Engine({
-  width: 1920 / 2,
-  height: 1080 / 2,
+  width: 1920 / 4,
+  height: 1080 / 4,
   displayMode: DisplayMode.FitScreen,
+  pixelRatio: 2,
+  suppressConsoleBootMessage: true,
 });
 
 engine.add("game-scene", new GameScene());
