@@ -1,5 +1,7 @@
-import { Actor, CollisionType, Color, Engine, Scene, Vector } from "excalibur";
+import { Actor, CollisionType, Color, Engine, Logger, Random, Scene, Vector } from "excalibur";
+import {EnemyCharacter} from "../actors/enemy";
 import { Resources } from "../resource";
+import { rand } from "../utilities/math";
 
 export class GameScene extends Scene {
   onInitialize(engine: Engine): void {
@@ -12,8 +14,8 @@ export class GameScene extends Scene {
     }
 
     const actor = new Actor({
-      x: playerStart.x,
-      y: playerStart.y,
+      x: playerStart.x + (playerStart.width! / 2),
+      y: playerStart.y + (playerStart.width! / 2),
       width: playerStart.width,
       height: playerStart.height,
       color: Color.Magenta,
@@ -24,15 +26,24 @@ export class GameScene extends Scene {
     };
     engine.add(actor);
 
-    const enemies = objects[0]?.getObjectsByName("spring");
+    const enemies = objects[0]?.getObjectsByName("enemy");
     if (!enemies) throw Error(`cannot find "enemies".`);
     for (let e of enemies) {
-      const enemy = new Actor({
-        x: e.x,
-        y: e.y,
+      const enemy = new EnemyCharacter({
+        x: e.x + (e.width! / 2),
+        y: e.y + (e.height! / 2),
         width: e.width,
         height: e.height,
+        collisionType: CollisionType.Active,
+        color: Color.Transparent,
+        enemyType: rand.integer(0, 2),
       })
+      enemy.on('pointerenter', () => {
+        enemy.color = enemy.enemyType == 0 ? Color.Red : enemy.enemyType == 1 ? Color.Green : Color.Blue;
+      });
+      enemy.on('pointerleave', () => {
+        enemy.color = Color.Transparent;
+      });
       engine.add(enemy);
     }
   }
