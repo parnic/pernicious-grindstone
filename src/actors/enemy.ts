@@ -32,6 +32,7 @@ export class EnemyCharacter extends Actor {
 
     private regularSprite: Sprite | undefined;
     private surprisedSprite: Sprite | undefined;
+    private surprised2Sprite: Sprite | undefined;
 
     private animDeltaMs: number = 0;
     private lastAnimTick: number = 0;
@@ -135,23 +136,31 @@ export class EnemyCharacter extends Actor {
         this.surprisedSprite.width = this.faceActor.width + 1;
         this.surprisedSprite.height = this.faceActor.height + 1;
 
+        this.surprised2Sprite = ImageResources.enemyFaces.surprisedBlinking.toSprite();
+        this.surprised2Sprite.width = this.faceActor.width + 1;
+        this.surprised2Sprite.height = this.faceActor.height + 1;
+
         this.faceActor.graphics.use(this.regularSprite);
     }
 
     public onPostUpdate(_engine: Engine, _delta: number): void {
-        if (this.hovered) {
-            return;
-        }
-
         this.lastAnimTick += _delta;
         if (this.lastAnimTick >= this.animDeltaMs) {
             this.lastAnimTick = 0;
             this.animFrame = (this.animFrame + 1) % 2;
 
             if (this.animFrame === 0 || !rand.bool()) {
+                if (this.hovered) {
+                    this.faceActor.graphics.use(this.surprisedSprite!);
+                }
+
                 this.faceActor.pos = vec(0, 0);
             } else {
-                this.faceActor.pos = vec(rand.integer(-1, 1), rand.integer(-1, 1));
+                if (this.hovered) {
+                    this.faceActor.graphics.use(this.surprised2Sprite!);
+                } else {
+                    this.faceActor.pos = vec(rand.integer(-1, 1), rand.integer(-1, 1));
+                }
             }
 
             this.pickNextAnimDelta();
