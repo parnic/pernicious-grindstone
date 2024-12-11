@@ -3,9 +3,7 @@
  <properties>
   <property name="excalibur" type="bool" value="true"/>
  </properties>
- <tileset firstgid="1" name="kenney-pixel-shmup" tilewidth="16" tileheight="16" tilecount="120" columns="12">
-  <image source="../../src/assets/kenney-pixel-shmup/tiles_packed.png" width="192" height="160"/>
- </tileset>
+ <tileset firstgid="1" source="../tsx/kenney-pixel-shmup.tsx"/>
  <layer id="1" name="solid" width="30" height="20">
   <properties>
    <property name="solid" type="bool" value="true"/>
