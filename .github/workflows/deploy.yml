@@ -38,6 +38,7 @@ jobs:
     permissions:
       id-token: write
       contents: write
+      pages: write
     if: github.ref == 'refs/heads/main'
 
     steps:
