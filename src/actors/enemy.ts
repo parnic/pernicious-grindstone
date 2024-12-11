@@ -9,21 +9,44 @@ export interface EnemyCharacterArgs extends ActorArgs {
 export class EnemyCharacter extends Actor {
     public enemyType: number = 0;
     public pointerWasMove: boolean = false;
-    
+
+    private _selected: boolean = false;
+    public get selected() {
+        return this._selected;
+    }
+    private set selected(newSelected: boolean) {
+        this._selected = newSelected;
+        if (this.selected) {
+            this.faceActor.graphics.use(this.deadSprite!);
+        } else if (this.hovered) {
+            this.faceActor.graphics.use(this.surprisedSprite!);
+        } else {
+            this.faceActor.graphics.use(this.regularSprite!);
+        }
+    }
+
     private _hovered: boolean = false;
     public get hovered() {
         return this._hovered;
     }
     public set hovered(newHovered: boolean) {
+        if (this._hovered == newHovered) {
+            return;
+        }
+
         this._hovered = newHovered;
 
         if (this.hovered) {
             this.color = new Color(240, 240, 240, 0.6);
-            this.faceActor.graphics.use(this.surprisedSprite!);
+            if (!this.selected) {
+                this.faceActor.graphics.use(this.surprisedSprite!);
+            }
             this.faceActor.pos = vec(0, 0);
         } else {
             this.color = Color.Transparent;
-            this.faceActor.graphics.use(this.regularSprite!);
+            if (!this.selected) {
+                this.faceActor.graphics.use(this.regularSprite!);
+            }
         }
     }
 
@@ -33,6 +56,7 @@ export class EnemyCharacter extends Actor {
     private regularSprite: Sprite | undefined;
     private surprisedSprite: Sprite | undefined;
     private surprised2Sprite: Sprite | undefined;
+    private deadSprite: Sprite | undefined;
 
     private animDeltaMs: number = 0;
     private lastAnimTick: number = 0;
@@ -140,10 +164,18 @@ export class EnemyCharacter extends Actor {
         this.surprised2Sprite.width = this.faceActor.width + 1;
         this.surprised2Sprite.height = this.faceActor.height + 1;
 
+        this.deadSprite = ImageResources.enemyFaces.dead.toSprite();
+        this.deadSprite.width = this.faceActor.width;
+        this.deadSprite.height = this.faceActor.height;
+
         this.faceActor.graphics.use(this.regularSprite);
     }
 
     public onPostUpdate(_engine: Engine, _delta: number): void {
+        if (this.selected) {
+            return;
+        }
+
         this.lastAnimTick += _delta;
         if (this.lastAnimTick >= this.animDeltaMs) {
             this.lastAnimTick = 0;
@@ -165,5 +197,9 @@ export class EnemyCharacter extends Actor {
 
             this.pickNextAnimDelta();
         }
+    }
+
+    public pointerup() {
+        this.selected = !this.selected;
     }
 }

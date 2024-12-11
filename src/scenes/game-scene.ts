@@ -45,6 +45,7 @@ export class GameScene extends Scene {
       enemy.on('pointerup', () => {
         // excalibur seems to generate a pointerup event after a click. ignore those.
         enemy.pointerWasMove = false;
+        enemy.pointerup();
       })
       enemy.on('pointerleave', () => {
         if (!enemy.pointerWasMove) {
