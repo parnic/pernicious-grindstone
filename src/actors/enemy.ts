@@ -1,14 +1,26 @@
 import { Actor, ActorArgs, Color, Engine, Line, Sprite, vec } from "excalibur";
 import { ImageResources } from "../resource";
 import { rand } from "../utilities/math";
+import { Cell } from "./cell";
+import { GameScene } from "../scenes/game-scene";
 
 export interface EnemyCharacterArgs extends ActorArgs {
     enemyType: number;
+    cell: Cell;
 }
 
 export class EnemyCharacter extends Actor {
     public enemyType: number = 0;
     public pointerWasMove: boolean = false;
+
+    private _cell: Cell;
+    public get cell() {
+        return this._cell;
+    }
+
+    public get gameScene() {
+        return this.scene as GameScene;
+    }
 
     private _selected: boolean = false;
     public get selected() {
@@ -37,7 +49,14 @@ export class EnemyCharacter extends Actor {
         this._hovered = newHovered;
 
         if (this.hovered) {
-            this.color = new Color(240, 240, 240, 0.6);
+            // todo: this should be checking the neighbor of the last guy in the path, not the player. but we don't have a path yet.
+            const neighbors = this.gameScene.player!.cell.getNeighbors();
+            if (neighbors.includes(this.cell)) {
+                this.color = new Color(240, 240, 240, 0.6);
+            } else {
+                this.color = Color.Red;
+            }
+
             if (!this.selected) {
                 this.faceActor.graphics.use(this.surprisedSprite!);
             }
@@ -66,6 +85,8 @@ export class EnemyCharacter extends Actor {
         super(config);
 
         this.enemyType = config?.enemyType ?? 0;
+        this._cell = config?.cell!;
+        this._cell.occupant = this;
 
         this.bodyActor = new Actor({
             x: 0,
