@@ -22,12 +22,35 @@ export class Cell extends Actor {
     }
 
     public getNeighbors(): Cell[] {
-        let neighbors = this.gameScene.cells.filter((c) =>
+        const neighbors = this.gameScene.cells.filter((c) =>
             c.id != this.id &&
             c.pos.x >= this.pos.x - this.width &&
             c.pos.x <= this.pos.x + this.width &&
             c.pos.y >= this.pos.y - this.height &&
-            c.pos.y <= this.pos.y + this.height);
+            c.pos.y <= this.pos.y + this.height
+        );
+
         return neighbors;
+    }
+
+    public getCellBeneath(): Cell | undefined {
+        const southNeighbor = this.gameScene.cells.find((c) =>
+            c.pos.y === this.pos.y + this.height &&
+            c.pos.x === this.pos.x
+        );
+
+        return southNeighbor;
+    }
+
+    public getFurthestUnoccupiedCellBeneath(): Cell | undefined {
+        const southNeighbors = this.gameScene.cells.filter((c) =>
+            c.pos.y > this.pos.y &&
+            c.pos.x === this.pos.x &&
+            !c.occupant
+        );
+
+        const reverseSorted = southNeighbors.sort((a, b) => b.pos.y - a.pos.y);
+        const furthest = reverseSorted.shift();
+        return furthest;
     }
 }
