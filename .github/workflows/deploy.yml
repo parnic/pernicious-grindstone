@@ -37,7 +37,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       id-token: write
-      contents: read
+      contents: write
     if: github.ref == 'refs/heads/main'
 
     steps:
