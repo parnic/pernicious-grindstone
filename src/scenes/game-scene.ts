@@ -1,7 +1,8 @@
-import { Actor, CollisionType, Color, Engine, Logger, Random, Scene, Vector } from "excalibur";
+import { CollisionType, Color, Engine, Scene } from "excalibur";
 import {EnemyCharacter} from "../actors/enemy";
 import { Resources } from "../resource";
 import { rand } from "../utilities/math";
+import { PlayerCharacter } from "../actors/player";
 
 export class GameScene extends Scene {
   onInitialize(engine: Engine): void {
@@ -13,18 +14,14 @@ export class GameScene extends Scene {
       throw Error(`cannot find "player_start" object in tilemap`);
     }
 
-    const actor = new Actor({
+    const player = new PlayerCharacter({
       x: playerStart.x + (playerStart.width! / 2),
       y: playerStart.y + (playerStart.width! / 2),
       width: playerStart.width,
       height: playerStart.height,
-      color: Color.Magenta,
       collisionType: CollisionType.Active,
     });
-    actor.onInitialize = (_engine: Engine): void => {
-      // actor.acc = Vector.Down.scale(100);
-    };
-    engine.add(actor);
+    engine.add(player);
 
     const enemies = objects[0]?.getObjectsByName("enemy");
     if (!enemies) throw Error(`cannot find "enemies".`);
@@ -38,12 +35,25 @@ export class GameScene extends Scene {
         color: Color.Transparent,
         enemyType: rand.integer(0, 2),
       })
+
       enemy.on('pointerenter', () => {
-        enemy.color = enemy.enemyType == 0 ? Color.Red : enemy.enemyType == 1 ? Color.Green : Color.Blue;
+        enemy.hovered = true;
       });
+      enemy.on('pointermove', () => {
+        enemy.pointerWasMove = true;
+      });
+      enemy.on('pointerup', () => {
+        // excalibur seems to generate a pointerup event after a click. ignore those.
+        enemy.pointerWasMove = false;
+      })
       enemy.on('pointerleave', () => {
-        enemy.color = Color.Transparent;
-      });
+        if (!enemy.pointerWasMove) {
+          return;
+        }
+
+        enemy.hovered = false;
+      })
+
       engine.add(enemy);
     }
   }
