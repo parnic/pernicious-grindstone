@@ -1,5 +1,5 @@
 import { CollisionType, Color, Engine, Scene } from "excalibur";
-import {EnemyCharacter} from "../actors/enemy";
+import { EnemyCharacter } from "../actors/enemy";
 import { Resources } from "../resource";
 import { rand } from "../utilities/math";
 import { PlayerCharacter } from "../actors/player";
@@ -25,14 +25,7 @@ export class GameScene extends Scene {
       throw Error(`cannot find "player_start" object in tilemap`);
     }
 
-    let cell = new Cell({
-      x: playerStart.x + (playerStart.width! / 2),
-      y: playerStart.y + (playerStart.width! / 2),
-      width: playerStart.width,
-      height: playerStart.height,
-    });
-    engine.add(cell);
-    this.cells.push(cell);
+    let cell = this.addCell(engine, playerStart.x, playerStart.y, playerStart.width!, playerStart.height!);
 
     this._player = new PlayerCharacter({
       x: playerStart.x + (playerStart.width! / 2),
@@ -47,14 +40,7 @@ export class GameScene extends Scene {
     const enemies = objects[0]?.getObjectsByName("enemy");
     if (!enemies) throw Error(`cannot find "enemies".`);
     for (let e of enemies) {
-      cell = new Cell({
-        x: e.x + (e.width! / 2),
-        y: e.y + (e.width! / 2),
-        width: e.width,
-        height: e.height,
-      });
-      engine.add(cell);
-      this.cells.push(cell);
+      let cell = this.addCell(engine, e.x, e.y, e.width!, e.height!);
 
       const enemy = new EnemyCharacter({
         x: e.x + (e.width! / 2),
@@ -67,25 +53,6 @@ export class GameScene extends Scene {
         cell: cell,
       })
 
-      enemy.on('pointerenter', () => {
-        enemy.hovered = true;
-      });
-      enemy.on('pointermove', () => {
-        enemy.pointerWasMove = true;
-      });
-      enemy.on('pointerup', () => {
-        // excalibur seems to generate a pointerup event after a click. ignore those.
-        enemy.pointerWasMove = false;
-        enemy.pointerup();
-      })
-      enemy.on('pointerleave', () => {
-        if (!enemy.pointerWasMove) {
-          return;
-        }
-
-        enemy.hovered = false;
-      })
-
       engine.add(enemy);
     }
 
@@ -96,5 +63,37 @@ export class GameScene extends Scene {
 
       return a.pos.x - b.pos.x;
     });
+  }
+
+  addCell(engine: Engine, x: number, y: number, width: number, height: number): Cell {
+    let cell = new Cell({
+      x: x + (width / 2),
+      y: y + (height / 2),
+      width: width,
+      height: height,
+      color: Color.Transparent,
+    });
+    cell.on('pointerenter', () => {
+      cell.hovered = true;
+    });
+    cell.on('pointermove', () => {
+      cell.pointerWasMove = true;
+    });
+    cell.on('pointerup', () => {
+      // excalibur seems to generate a pointerup event after a click. ignore those.
+      cell.pointerWasMove = false;
+      cell.pointerup();
+    });
+    cell.on('pointerleave', () => {
+      if (!cell.pointerWasMove) {
+        return;
+      }
+
+      cell.hovered = false;
+    });
+    engine.add(cell);
+    this.cells.push(cell);
+
+    return cell;
   }
 }

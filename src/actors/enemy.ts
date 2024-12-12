@@ -9,9 +9,19 @@ export interface EnemyCharacterArgs extends ActorArgs {
     cell: Cell;
 }
 
-export class EnemyCharacter extends Actor {
+export interface Hoverable {
+    get hovered(): boolean;
+    set hovered(inHovered: boolean);
+    pointerup(): void;
+    get selected(): boolean;
+}
+
+export function isHoverable(object: any): object is Hoverable {
+    return (object as Hoverable).hovered !== undefined;
+}
+
+export class EnemyCharacter extends Actor implements Hoverable {
     public enemyType: number = 0;
-    public pointerWasMove: boolean = false;
 
     private _cell: Cell;
     public get cell() {
@@ -49,20 +59,11 @@ export class EnemyCharacter extends Actor {
         this._hovered = newHovered;
 
         if (this.hovered) {
-            // todo: this should be checking the neighbor of the last guy in the path, not the player. but we don't have a path yet.
-            const neighbors = this.gameScene.player!.cell.getNeighbors();
-            if (neighbors.includes(this.cell)) {
-                this.color = new Color(240, 240, 240, 0.6);
-            } else {
-                this.color = Color.Red;
-            }
-
             if (!this.selected) {
                 this.faceActor.graphics.use(this.surprisedSprite!);
             }
             this.faceActor.pos = vec(0, 0);
         } else {
-            this.color = Color.Transparent;
             if (!this.selected) {
                 this.faceActor.graphics.use(this.regularSprite!);
             }
