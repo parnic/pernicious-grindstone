@@ -86,7 +86,7 @@ export class GameScene extends Scene {
       console.log("cell entered")
       cell.hovered = true;
 
-      if (this._pointerDown) {
+      if (this._pointerDown && !(cell.occupant instanceof PlayerCharacter) && cell !== this.player?.pathTail) {
         cell.pointerdown();
       }
     });
