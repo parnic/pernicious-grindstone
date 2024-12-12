@@ -74,8 +74,19 @@ export class PlayerCharacter extends Actor {
         }
     }
 
-    public select(enemy: EnemyCharacter) {
-        let selectedIdx = this.path.findIndex((c) => c == enemy.cell);
+    public select(enemy?: EnemyCharacter) {
+        if (enemy instanceof PlayerCharacter) {
+            for (let c of this.path) {
+                if (isHoverable(c.occupant)) {
+                    c.occupant.pointerup();
+                }
+            }
+
+            this.path.length = 0;
+            return;
+        }
+
+        let selectedIdx = this.path.findIndex((c) => c == enemy!.cell);
         if (selectedIdx >= 0) {
             // if we select someone further back in the path, reset the path to that person
             // rather than deselecting everyone starting at them and going to the end.
@@ -93,8 +104,8 @@ export class PlayerCharacter extends Actor {
             return;
         }
 
-        this.path.push(enemy.cell);
-        enemy.pointerup();
+        this.path.push(enemy!.cell);
+        enemy!.pointerup();
     }
 
     public get pathTail(): Cell {

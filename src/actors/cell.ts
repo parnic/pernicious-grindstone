@@ -70,7 +70,7 @@ export class Cell extends Actor implements Hoverable {
     }
 
     pointerup(): void {
-        if (isHoverable(this.occupant) && this.occupant.hovered) {
+        if ((isHoverable(this.occupant) && this.occupant.hovered) || this.occupant instanceof PlayerCharacter) {
             this.gameScene.player?.select(this.occupant as EnemyCharacter);
         }
     }
