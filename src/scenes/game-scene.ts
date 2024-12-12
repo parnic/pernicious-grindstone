@@ -16,6 +16,8 @@ export class GameScene extends Scene {
     return this._player;
   }
 
+  private _pointerDown: Boolean = false;
+
   onInitialize(engine: Engine): void {
     Resources.tiledmap.addTiledMapToScene(this);
     const objects = Resources.tiledmap.data.getExcaliburObjects();
@@ -63,6 +65,13 @@ export class GameScene extends Scene {
 
       return a.pos.x - b.pos.x;
     });
+
+    engine.input.pointers.primary.on('down', () => {
+      this._pointerDown = true;
+    });
+    engine.input.pointers.primary.on('up', () => {
+      this._pointerDown = false;
+    });
   }
 
   addCell(engine: Engine, x: number, y: number, width: number, height: number): Cell {
@@ -76,14 +85,18 @@ export class GameScene extends Scene {
     cell.on('pointerenter', () => {
       console.log("cell entered")
       cell.hovered = true;
+
+      if (this._pointerDown) {
+        cell.pointerdown();
+      }
     });
     cell.on('pointermove', () => {
       cell.pointerWasMove = true;
     });
-    cell.on('pointerup', () => {
-      // excalibur seems to generate a pointerup event after a click. ignore those.
+    cell.on('pointerdown', () => {
+      // excalibur seems to generate a pointerleave event after a click. ignore those.
       cell.pointerWasMove = false;
-      cell.pointerup();
+      cell.pointerdown();
     });
     cell.on('pointerleave', () => {
       if (!cell.pointerWasMove) {

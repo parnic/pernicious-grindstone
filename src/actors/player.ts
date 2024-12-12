@@ -84,7 +84,7 @@ export class PlayerCharacter extends Actor {
         if (enemy instanceof PlayerCharacter) {
             for (let c of this.path) {
                 if (isHoverable(c.occupant)) {
-                    c.occupant.pointerup();
+                    c.occupant.pointerdown();
                 }
             }
 
@@ -105,7 +105,7 @@ export class PlayerCharacter extends Actor {
             const removed = this.path.splice(selectedIdx);
             for (let c of removed) {
                 if (isHoverable(c.occupant)) {
-                    c.occupant.pointerup();
+                    c.occupant.pointerdown();
                 }
             }
             this.updateScoreUi();
@@ -113,7 +113,7 @@ export class PlayerCharacter extends Actor {
         }
 
         this.path.push(enemy!.cell);
-        enemy!.pointerup();
+        enemy!.pointerdown();
 
         this.updateScoreUi();
     }

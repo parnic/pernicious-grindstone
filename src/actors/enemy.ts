@@ -13,7 +13,7 @@ export interface EnemyCharacterArgs extends ActorArgs {
 export interface Hoverable {
     get hovered(): boolean;
     set hovered(inHovered: boolean);
-    pointerup(): void;
+    pointerdown(): void;
     get selected(): boolean;
 }
 
@@ -243,7 +243,7 @@ export class EnemyCharacter extends Actor implements Hoverable {
         }
     }
 
-    public pointerup() {
+    public pointerdown() {
         this.selected = !this.selected;
     }
 }
