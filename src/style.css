@@ -7,3 +7,37 @@ canvas {
   -webkit-touch-callout: none !important;
   -webkit-user-select: none !important;
 }
+
+@font-face {
+  font-family: 'Silkscreen';
+  src: url('fonts/Silkscreen-Regular.ttf') format('truetype');
+}
+
+body {
+  font-family: 'Silkscreen';
+  color: #333;
+}
+
+#game {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.excalibur-scale {
+  transform-origin: 0 0;
+  transform: scale(var(--pixel-conversion), var(--pixel-conversion));
+}
+
+#pathElement {
+  position: absolute;
+}
+
+.hide {
+  display: none;
+}
+
+.show {
+  display: block;
+}

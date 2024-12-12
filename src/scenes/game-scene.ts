@@ -35,7 +35,7 @@ export class GameScene extends Scene {
       collisionType: CollisionType.Active,
       cell: cell,
     });
-    engine.add(this.player!);
+    this.add(this.player!);
 
     const enemies = objects[0]?.getObjectsByName("enemy");
     if (!enemies) throw Error(`cannot find "enemies".`);
@@ -53,7 +53,7 @@ export class GameScene extends Scene {
         cell: cell,
       })
 
-      engine.add(enemy);
+      this.add(enemy);
     }
 
     this.cells.sort((a, b) => {
@@ -74,6 +74,7 @@ export class GameScene extends Scene {
       color: Color.Transparent,
     });
     cell.on('pointerenter', () => {
+      console.log("cell entered")
       cell.hovered = true;
     });
     cell.on('pointermove', () => {
@@ -91,7 +92,7 @@ export class GameScene extends Scene {
 
       cell.hovered = false;
     });
-    engine.add(cell);
+    this.add(cell);
     this.cells.push(cell);
 
     return cell;

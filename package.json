@@ -22,7 +22,7 @@
     "@excaliburjs/plugin-tiled": "^0.27.0",
     "excalibur": "^0.27.0",
     "typescript": "^5.7.2",
-    "vite": "4.5.5"
+    "vite": "6.0.3"
   },
   "devDependencies": {
     "prettier": "^3.4.2"
