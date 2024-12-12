@@ -8,8 +8,10 @@ const engine = new Engine({
   width: 1920 / 4,
   height: 1080 / 4,
   displayMode: DisplayMode.FitScreen,
-  pixelRatio: 4,
+  pixelRatio: 2,
   suppressConsoleBootMessage: true,
+  antialiasing: false,
+  suppressHiDPIScaling: false,
 });
 
 calculateExPixelConversion(engine.screen);
