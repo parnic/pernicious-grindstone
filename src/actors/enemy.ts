@@ -3,6 +3,7 @@ import { ImageResources } from "../resource";
 import { rand } from "../utilities/math";
 import { Cell } from "./cell";
 import { GameScene } from "../scenes/game-scene";
+import { PlayerCharacter } from "./player";
 
 export interface EnemyCharacterArgs extends ActorArgs {
     enemyType: number;
@@ -16,12 +17,21 @@ export interface Hoverable {
     get selected(): boolean;
 }
 
+interface EnemySprites {
+    body?: Sprite | undefined;
+    regular?: Sprite | undefined;
+    surprised?: Sprite | undefined;
+    surprised2?: Sprite | undefined;
+    dead?: Sprite | undefined;
+}
+
 export function isHoverable(object: any): object is Hoverable {
     return (object as Hoverable).hovered !== undefined;
 }
 
 export class EnemyCharacter extends Actor implements Hoverable {
     public enemyType: number = 0;
+    private fadedColor: Color = new Color(127, 127, 127, 0.5);
 
     private _cell: Cell;
     public get cell() {
@@ -39,11 +49,11 @@ export class EnemyCharacter extends Actor implements Hoverable {
     private set selected(newSelected: boolean) {
         this._selected = newSelected;
         if (this.selected) {
-            this.faceActor.graphics.use(this.deadSprite!);
+            this.faceActor.graphics.use(this.sprites.dead!);
         } else if (this.hovered) {
-            this.faceActor.graphics.use(this.surprisedSprite!);
+            this.faceActor.graphics.use(this.sprites.surprised!);
         } else {
-            this.faceActor.graphics.use(this.regularSprite!);
+            this.faceActor.graphics.use(this.sprites.regular!);
         }
     }
 
@@ -60,12 +70,12 @@ export class EnemyCharacter extends Actor implements Hoverable {
 
         if (this.hovered) {
             if (!this.selected) {
-                this.faceActor.graphics.use(this.surprisedSprite!);
+                this.faceActor.graphics.use(this.sprites.surprised!);
             }
             this.faceActor.pos = vec(0, 0);
         } else {
             if (!this.selected) {
-                this.faceActor.graphics.use(this.regularSprite!);
+                this.faceActor.graphics.use(this.sprites.regular!);
             }
         }
     }
@@ -73,10 +83,7 @@ export class EnemyCharacter extends Actor implements Hoverable {
     public bodyActor: Actor;
     public faceActor: Actor;
 
-    private regularSprite: Sprite | undefined;
-    private surprisedSprite: Sprite | undefined;
-    private surprised2Sprite: Sprite | undefined;
-    private deadSprite: Sprite | undefined;
+    private sprites: EnemySprites = {};
 
     private animDeltaMs: number = 0;
     private lastAnimTick: number = 0;
@@ -104,6 +111,8 @@ export class EnemyCharacter extends Actor implements Hoverable {
             height: 6,
         });
         this.addChild(this.faceActor);
+
+        this.sprites = {};
 
         // this.addOutline();
     }
@@ -169,31 +178,38 @@ export class EnemyCharacter extends Actor implements Hoverable {
     public onInitialize(_engine: Engine): void {
         this.pickNextAnimDelta();
 
-        const bodySprite = ImageResources.enemyBodies[this.enemyType].toSprite();
-        bodySprite.width = this.bodyActor.width;
-        bodySprite.height = this.bodyActor.height;
-        this.bodyActor.graphics.use(bodySprite);
+        this.sprites.body = ImageResources.enemyBodies[this.enemyType].toSprite();
+        this.sprites.body.width = this.bodyActor.width;
+        this.sprites.body.height = this.bodyActor.height;
+        this.bodyActor.graphics.use(this.sprites.body);
 
-        this.regularSprite = ImageResources.enemyFaces.happy.toSprite();
-        this.regularSprite.width = this.faceActor.width;
-        this.regularSprite.height = this.faceActor.height;
+        this.sprites.regular = ImageResources.enemyFaces.happy.toSprite();
+        this.sprites.regular.width = this.faceActor.width;
+        this.sprites.regular.height = this.faceActor.height;
 
-        this.surprisedSprite = ImageResources.enemyFaces.surprised.toSprite();
-        this.surprisedSprite.width = this.faceActor.width + 1;
-        this.surprisedSprite.height = this.faceActor.height + 1;
+        this.sprites.surprised = ImageResources.enemyFaces.surprised.toSprite();
+        this.sprites.surprised.width = this.faceActor.width + 1;
+        this.sprites.surprised.height = this.faceActor.height + 1;
 
-        this.surprised2Sprite = ImageResources.enemyFaces.surprisedBlinking.toSprite();
-        this.surprised2Sprite.width = this.faceActor.width + 1;
-        this.surprised2Sprite.height = this.faceActor.height + 1;
+        this.sprites.surprised2 = ImageResources.enemyFaces.surprisedBlinking.toSprite();
+        this.sprites.surprised2.width = this.faceActor.width + 1;
+        this.sprites.surprised2.height = this.faceActor.height + 1;
 
-        this.deadSprite = ImageResources.enemyFaces.dead.toSprite();
-        this.deadSprite.width = this.faceActor.width;
-        this.deadSprite.height = this.faceActor.height;
+        this.sprites.dead = ImageResources.enemyFaces.dead.toSprite();
+        this.sprites.dead.width = this.faceActor.width;
+        this.sprites.dead.height = this.faceActor.height;
 
-        this.faceActor.graphics.use(this.regularSprite);
+        this.faceActor.graphics.use(this.sprites.regular);
     }
 
     public onPostUpdate(_engine: Engine, _delta: number): void {
+        const pathTail = this.gameScene.player!.pathTail;
+        if (pathTail.occupant instanceof PlayerCharacter || (pathTail.occupant as EnemyCharacter).enemyType === this.enemyType) {
+            this.setSpritesColor(Color.White);
+        } else {
+            this.setSpritesColor(this.fadedColor);
+        }
+
         if (this.selected) {
             return;
         }
@@ -205,19 +221,25 @@ export class EnemyCharacter extends Actor implements Hoverable {
 
             if (this.animFrame === 0 || !rand.bool()) {
                 if (this.hovered) {
-                    this.faceActor.graphics.use(this.surprisedSprite!);
+                    this.faceActor.graphics.use(this.sprites.surprised!);
                 }
 
                 this.faceActor.pos = vec(0, 0);
             } else {
                 if (this.hovered) {
-                    this.faceActor.graphics.use(this.surprised2Sprite!);
+                    this.faceActor.graphics.use(this.sprites.surprised2!);
                 } else {
                     this.faceActor.pos = vec(rand.integer(-1, 1), rand.integer(-1, 1));
                 }
             }
 
             this.pickNextAnimDelta();
+        }
+    }
+
+    private setSpritesColor(color: Color) {
+        for (let s of Object.values(this.sprites).map((s) => s as Sprite)) {
+            s.tint = color;
         }
     }
 
