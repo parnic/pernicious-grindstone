@@ -1,4 +1,4 @@
-import { Actor, ActorArgs, Color } from "excalibur";
+import { Actor, ActorArgs, Color, Engine } from "excalibur";
 import { GameScene } from "../scenes/game-scene";
 import { PlayerCharacter } from "./player";
 import { EnemyCharacter, Hoverable, isHoverable } from "./enemy";
@@ -8,6 +8,10 @@ export interface CellArgs extends ActorArgs {
 
 export class Cell extends Actor implements Hoverable {
     public pointerWasMove: boolean = false;
+
+    private _desiredHoverColor: Color = Color.Transparent;
+    private _validHoverColor: Color = new Color(240, 240, 240, 0.6);
+    private _invalidHoverColor: Color = Color.Red;
 
     private _occupant?: Actor;
     public get occupant() {
@@ -48,16 +52,16 @@ export class Cell extends Actor implements Hoverable {
             if ((neighbors.includes(this) || this == pathTail ||
                 (isHoverable(this.occupant) && this.occupant.selected)) &&
                 occupantSameTypeAsPathTail) {
-                this.color = new Color(240, 240, 240, 0.6);
+                this._desiredHoverColor = new Color(240, 240, 240, 0.6);
 
                 if (isHoverable(this.occupant)) {
                     this.occupant.hovered = true;
                 }
             } else {
-                this.color = Color.Red;
+                this._desiredHoverColor = Color.Red;
             }
         } else {
-            this.color = Color.Transparent;
+            this._desiredHoverColor = Color.Transparent;
 
             if (isHoverable(this.occupant) && this.occupant.hovered) {
                 this.occupant.hovered = false;
@@ -72,6 +76,14 @@ export class Cell extends Actor implements Hoverable {
     pointerdown(): void {
         if ((isHoverable(this.occupant) && this.occupant.hovered) || this.occupant instanceof PlayerCharacter) {
             this.gameScene.player?.select(this.occupant as EnemyCharacter);
+        }
+    }
+
+    onPostUpdate(_engine: Engine, _delta: number): void {
+        if (!this.gameScene.pointerDown) {
+            this.color = this._desiredHoverColor;
+        } else if (this.color !== Color.Transparent) {
+            this.color = Color.Transparent;
         }
     }
 

@@ -17,6 +17,9 @@ export class GameScene extends Scene {
   }
 
   private _pointerDown: Boolean = false;
+  public get pointerDown(): Boolean {
+    return this._pointerDown;
+  }
 
   onInitialize(engine: Engine): void {
     Resources.tiledmap.addTiledMapToScene(this);
