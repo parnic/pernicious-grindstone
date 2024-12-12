@@ -37,7 +37,7 @@ export class GameScene extends Scene {
       y: playerStart.y + (playerStart.width! / 2),
       width: playerStart.width,
       height: playerStart.height,
-      collisionType: CollisionType.Active,
+      collisionType: CollisionType.PreventCollision,
       cell: cell,
     });
     this.add(this.player!);
@@ -52,7 +52,7 @@ export class GameScene extends Scene {
         y: e.y + (e.height! / 2),
         width: e.width,
         height: e.height,
-        collisionType: CollisionType.Active,
+        collisionType: CollisionType.PreventCollision,
         color: Color.Transparent,
         enemyType: rand.integer(0, 2),
         cell: cell,
