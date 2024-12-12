@@ -9,9 +9,6 @@ export interface PlayerCharacterArgs extends ActorArgs {
 }
 
 export class PlayerCharacter extends Actor {
-    scoreRoot: HTMLElement;
-    scoreVal: HTMLElement;
-
     private _cell: Cell;
     public get cell() {
         return this._cell;
@@ -33,9 +30,6 @@ export class PlayerCharacter extends Actor {
 
         this._cell = config?.cell!;
         this._cell.occupant = this;
-
-        this.scoreRoot = document.getElementById('pathElement')!;
-        this.scoreVal = document.getElementById('pathScore')!;
     }
 
     public onInitialize(_engine: Engine): void {
@@ -89,7 +83,6 @@ export class PlayerCharacter extends Actor {
             }
 
             this.path.length = 0;
-            this.updateScoreUi();
             return;
         }
 
@@ -108,25 +101,11 @@ export class PlayerCharacter extends Actor {
                     c.occupant.pointerup();
                 }
             }
-            this.updateScoreUi();
             return;
         }
 
         this.path.push(enemy!.cell);
         enemy!.pointerup();
-
-        this.updateScoreUi();
-    }
-
-    updateScoreUi() {
-        if (this.path.length === 0) {
-            this.scoreRoot.classList.add('hide');
-            this.scoreRoot.classList.remove('show');
-        } else {
-            this.scoreRoot.classList.add('show');
-            this.scoreRoot.classList.remove('hide');
-        }
-        this.scoreVal.textContent = `${this.path.length}`;
     }
 
     public get pathTail(): Cell {
