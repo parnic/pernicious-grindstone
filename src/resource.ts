@@ -1,5 +1,7 @@
-import { TiledMapResource } from "@excaliburjs/plugin-tiled";
-import { ImageSource } from "excalibur";
+import { TiledResource } from "@excaliburjs/plugin-tiled";
+import { FontSource, ImageSource } from "excalibur";
+
+import SilkscreenFont from './Silkscreen-Regular.ttf';
 
 const tiledMapTmx = `stage-01.tmx`;
 
@@ -23,8 +25,9 @@ const imageEnemyFaceSurprisedBlinking = `img/kenney-shape-characters/face_k.png`
 const imageEnemyFaceHopefulBlinking = `img/kenney-shape-characters/face_l.png`
 
 export const Resources = {
-  tiledmap: new TiledMapResource(tiledMapTmx),
+  tiledmap: new TiledResource(tiledMapTmx, {startZIndex: -3}),
   spritesheet: new ImageSource(spriteSheet),
+  PixelFont: new FontSource(SilkscreenFont, 'silkscreen')
 };
 
 export const ImageResources = {

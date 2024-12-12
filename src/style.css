@@ -7,3 +7,32 @@ canvas {
   -webkit-touch-callout: none !important;
   -webkit-user-select: none !important;
 }
+
+body {
+  font-family: 'silkscreen';
+  color: #333;
+}
+
+#game {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.excalibur-scale {
+  transform-origin: 0 0;
+  transform: scale(var(--pixel-conversion), var(--pixel-conversion));
+}
+
+#pathElement {
+  position: absolute;
+}
+
+.hide {
+  display: none;
+}
+
+.show {
+  display: block;
+}
