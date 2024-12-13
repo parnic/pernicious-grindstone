@@ -4,7 +4,7 @@ import { GameScene } from "./scenes/game-scene";
 import { calculateExPixelConversion } from "./ui";
 
 const engine = new Engine({
-  // canvasElementId: 'game',
+  canvasElementId: 'game',
   width: 1920 / 4,
   height: 1080 / 4,
   displayMode: DisplayMode.FitScreen,
@@ -33,6 +33,7 @@ for (const resource of Object.values(ImageResources.enemyFaces)) {
 
 loader.suppressPlayButton = true;
 
+engine.screen.events.on('resize', () => calculateExPixelConversion(engine.screen));
 engine.start(loader).then(() => {
   engine.goToScene("game-scene");
 });

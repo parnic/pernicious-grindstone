@@ -4,6 +4,7 @@ import { Resources } from "../resource";
 import { rand } from "../utilities/math";
 import { PlayerCharacter } from "../actors/player";
 import { Cell } from "../actors/cell";
+import { InsertedTile } from "@excaliburjs/plugin-tiled";
 
 export class GameScene extends Scene {
   private _cells: Cell[] = [];
@@ -22,10 +23,10 @@ export class GameScene extends Scene {
   }
 
   onInitialize(engine: Engine): void {
-    Resources.tiledmap.addTiledMapToScene(this);
-    const objects = Resources.tiledmap.data.getExcaliburObjects();
+    Resources.tiledmap.addToScene(this);
+    const objects = Resources.tiledmap.getObjectLayers('obje');
 
-    const playerStart = objects[0]?.getObjectByName("player_start");
+    const playerStart = objects[0]?.getObjectsByName("player_start")[0] as InsertedTile;
     if (!playerStart) {
       throw Error(`cannot find "player_start" object in tilemap`);
     }
@@ -44,7 +45,7 @@ export class GameScene extends Scene {
 
     const enemies = objects[0]?.getObjectsByName("enemy");
     if (!enemies) throw Error(`cannot find "enemies".`);
-    for (let e of enemies) {
+    for (let e of enemies.map((enemy) => enemy as InsertedTile)) {
       let cell = this.addCell(engine, e.x, e.y, e.width!, e.height!);
       this.spawnEnemy(cell);
     }

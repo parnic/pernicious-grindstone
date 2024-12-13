@@ -5,7 +5,7 @@ import { GameScene } from "../scenes/game-scene";
 import { EnemyCharacter, isHoverable } from "./enemy";
 import { rand } from "../utilities/math";
 
-export interface PlayerCharacterArgs extends ActorArgs {
+export type PlayerCharacterArgs = ActorArgs & {
     cell: Cell;
 }
 
@@ -175,7 +175,7 @@ export class PlayerCharacter extends Actor {
         const delayMin = 15;
         const moveSpeedMax = 600;
         const camStrategy = new ElasticToActorStrategy(this, 0.1, 0.9);
-        const origCamPos = this.scene.camera.pos;
+        const origCamPos = this.scene!.camera.pos;
 
         let idx = 0;
         let moveChain = this.actions.moveTo(this.path[idx].pos, moveSpeed).callMethod(() => this.path[0].occupant?.kill()).callMethod(() => this.addScore(1));
@@ -188,17 +188,17 @@ export class PlayerCharacter extends Actor {
             moveChain = moveChain.callMethod(() => this.path[killIdx].occupant?.kill());
             moveChain = moveChain.callMethod(() => this.addScore(1));
             if (killIdx === 9) {
-                moveChain = moveChain.callMethod(() => this.scene.camera.addStrategy(camStrategy));
+                moveChain = moveChain.callMethod(() => this.scene!.camera.addStrategy(camStrategy));
             }
             if (killIdx % 9 === 0) {
                 const adder = killIdx / 900;
-                moveChain = moveChain.callMethod(() => this.scene.camera.zoomOverTime(1.05 + adder, 500, EasingFunctions.EaseInOutCubic));
+                moveChain = moveChain.callMethod(() => this.scene!.camera.zoomOverTime(1.05 + adder, 500, EasingFunctions.EaseInOutCubic));
             }
 
             const moveSpeedBaseInt = Math.trunc(moveSpeed / 100);
             const shakeXMin = Math.max(1, (moveSpeedBaseInt) - 2);
             const shakeXMax = moveSpeedBaseInt;
-            moveChain = moveChain.callMethod(() => this.scene.camera.shake(rand.integer(shakeXMin, shakeXMax), rand.integer(0, 2), delay));
+            moveChain = moveChain.callMethod(() => this.scene!.camera.shake(rand.integer(shakeXMin, shakeXMax), rand.integer(0, 2), delay));
 
             delay = Math.max(delayMin, delay * 0.9);
             moveSpeed = Math.min(moveSpeedMax, moveSpeed * 1.1);
@@ -213,9 +213,9 @@ export class PlayerCharacter extends Actor {
         }).delay(
             1500
         ).callMethod(() => {
-            this.scene.camera.removeStrategy(camStrategy);
-            this.scene.camera.move(origCamPos, 250, EasingFunctions.EaseInOutCubic);
-            this.scene.camera.zoomOverTime(1, 250, EasingFunctions.EaseInOutCubic);
+            this.scene!.camera.removeStrategy(camStrategy);
+            this.scene!.camera.move(origCamPos, 250, EasingFunctions.EaseInOutCubic);
+            this.scene!.camera.zoomOverTime(1, 250, EasingFunctions.EaseInOutCubic);
 
             this.gameScene.refillEnemies();
             this._going = false;

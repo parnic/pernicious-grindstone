@@ -5,7 +5,7 @@ import { Cell } from "./cell";
 import { GameScene } from "../scenes/game-scene";
 import { PlayerCharacter } from "./player";
 
-export interface EnemyCharacterArgs extends ActorArgs {
+export type EnemyCharacterArgs = ActorArgs & {
     enemyType: number;
     cell: Cell;
 }

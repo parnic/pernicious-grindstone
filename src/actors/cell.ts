@@ -1,9 +1,9 @@
-import { Actor, ActorArgs, Color, Engine } from "excalibur";
+import { Actor, ActorArgs, Color, Engine, Rectangle } from "excalibur";
 import { GameScene } from "../scenes/game-scene";
 import { PlayerCharacter } from "./player";
 import { EnemyCharacter, Hoverable, isHoverable } from "./enemy";
 
-export interface CellArgs extends ActorArgs {
+export type CellArgs = ActorArgs & {
 }
 
 export class Cell extends Actor implements Hoverable {
@@ -12,6 +12,7 @@ export class Cell extends Actor implements Hoverable {
     private _desiredHoverColor: Color = Color.Transparent;
     private _validHoverColor: Color = new Color(240, 240, 240, 0.6);
     private _invalidHoverColor: Color = Color.Red;
+    private _box: Rectangle;
 
     private _occupant?: Actor;
     public get occupant() {
@@ -71,6 +72,16 @@ export class Cell extends Actor implements Hoverable {
 
     constructor(config?: CellArgs) {
         super(config);
+
+        this._box = new Rectangle({
+            width: this.width,
+            height: this.height,
+            color: this.color,
+        });
+    }
+
+    onInitialize(engine: Engine): void {
+        this.graphics.use(this._box);
     }
 
     pointerdown(): void {
@@ -81,9 +92,13 @@ export class Cell extends Actor implements Hoverable {
 
     onPostUpdate(_engine: Engine, _delta: number): void {
         if (!this.gameScene.pointerDown) {
-            this.color = this._desiredHoverColor;
-        } else if (this.color !== Color.Transparent) {
+            if (!this.color.equal(this._desiredHoverColor)) {
+                this.color = this._desiredHoverColor;
+                this._box.color = this.color;
+            }
+        } else if (!this.color.equal(Color.Transparent)) {
             this.color = Color.Transparent;
+            this._box.color = this.color;
         }
     }
 

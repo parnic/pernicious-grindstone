@@ -19,8 +19,8 @@
   },
   "homepage": "https://github.com/parnic/pernicions-grindstone",
   "dependencies": {
-    "@excaliburjs/plugin-tiled": "^0.27.0",
-    "excalibur": "^0.27.0",
+    "@excaliburjs/plugin-tiled": "^0.30.0",
+    "excalibur": "^0.30.1",
     "typescript": "^5.7.2",
     "vite": "6.0.3"
   },
