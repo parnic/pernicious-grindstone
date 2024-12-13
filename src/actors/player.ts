@@ -169,14 +169,22 @@ export class PlayerCharacter extends Actor {
 
         this._going = true;
 
+        let moveSpeed = 200;
+        let delay = 100;
+        const delayMin = 15;
+        const moveSpeedMax = 600;
+
         let idx = 0;
-        let moveChain = this.actions.moveTo(this.path[idx].pos, 200).callMethod(() => this.path[0].occupant?.kill()).callMethod(() => this.addScore(1));
+        let moveChain = this.actions.moveTo(this.path[idx].pos, moveSpeed).callMethod(() => this.path[0].occupant?.kill()).callMethod(() => this.addScore(1));
         for (idx = 1; idx < this.path.length; idx++) {
             const killIdx = idx;
-            moveChain = moveChain.delay(100);
-            moveChain = moveChain.moveTo(this.path[idx].pos, 200);
+            moveChain = moveChain.delay(delay);
+            moveChain = moveChain.moveTo(this.path[idx].pos, moveSpeed);
             moveChain = moveChain.callMethod(() => this.path[killIdx].occupant?.kill());
             moveChain = moveChain.callMethod(() => this.addScore(1));
+
+            delay = Math.max(delayMin, delay * 0.9);
+            moveSpeed = Math.min(moveSpeedMax, moveSpeed * 1.1);
         }
 
         moveChain = moveChain.callMethod(() => {
