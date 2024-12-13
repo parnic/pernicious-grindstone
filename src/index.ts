@@ -1,4 +1,4 @@
-import { DisplayMode, Engine, Loader } from "excalibur";
+import { Color, DisplayMode, Engine, Loader } from "excalibur";
 import { ImageResources, Resources } from "./resource";
 import { GameScene } from "./scenes/game-scene";
 import { calculateExPixelConversion } from "./ui";
@@ -9,6 +9,7 @@ const engine = new Engine({
   height: 1080 / 4,
   displayMode: DisplayMode.FitScreen,
   pixelRatio: 2,
+  backgroundColor: new Color(0xdf, 0xf6, 0xf5, 1),
   suppressConsoleBootMessage: true,
   antialiasing: false,
   suppressHiDPIScaling: false,

@@ -16,6 +16,7 @@ canvas {
 body {
   font-family: 'Silkscreen';
   color: #333;
+  background-color: #dff6f5;
 }
 
 #game {
