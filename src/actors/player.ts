@@ -182,6 +182,8 @@ export class PlayerCharacter extends Actor {
         for (idx = 1; idx < this.path.length; idx++) {
             const killIdx = idx;
             moveChain = moveChain.delay(delay);
+            // todo: move speed frequently puts the player past the target location and then snaps them back, visibly.
+            // can we fix it? somehow?
             moveChain = moveChain.moveTo(this.path[idx].pos, moveSpeed);
             moveChain = moveChain.callMethod(() => this.path[killIdx].occupant?.kill());
             moveChain = moveChain.callMethod(() => this.addScore(1));
