@@ -52,13 +52,13 @@ export class Cell extends Actor implements Hoverable {
             if ((neighbors.includes(this) || this == pathTail ||
                 (isHoverable(this.occupant) && this.occupant.selected)) &&
                 occupantSameTypeAsPathTail) {
-                this._desiredHoverColor = new Color(240, 240, 240, 0.6);
+                this._desiredHoverColor = this._validHoverColor;
 
                 if (isHoverable(this.occupant)) {
                     this.occupant.hovered = true;
                 }
             } else {
-                this._desiredHoverColor = Color.Red;
+                this._desiredHoverColor = this._invalidHoverColor;
             }
         } else {
             this._desiredHoverColor = Color.Transparent;
