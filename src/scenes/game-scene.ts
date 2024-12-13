@@ -86,7 +86,6 @@ export class GameScene extends Scene {
       color: Color.Transparent,
     });
     cell.on('pointerenter', () => {
-      console.log("cell entered")
       cell.hovered = true;
 
       if (this._pointerDown && !(cell.occupant instanceof PlayerCharacter) && cell !== this.player?.pathTail) {
