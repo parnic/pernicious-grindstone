@@ -170,21 +170,24 @@ export class PlayerCharacter extends Actor {
 
         this._going = true;
 
-        let moveSpeed = 200;
-        let delay = 100;
+        const moveDurationMax = 200;
+        const moveDurationMin = 30;
         const delayMin = 15;
-        const moveSpeedMax = 600;
+
+        let moveDuration = moveDurationMax;
+        let delay = 100;
+
         const camStrategy = new ElasticToActorStrategy(this, 0.1, 0.9);
         const origCamPos = this.scene!.camera.pos;
 
         let idx = 0;
-        let moveChain = this.actions.moveTo(this.path[idx].pos, moveSpeed).callMethod(() => this.path[0].occupant?.kill()).callMethod(() => this.addScore(1));
+        let moveChain = this.actions.moveTo({pos: this.path[idx].pos, duration: moveDuration, easing: EasingFunctions.EaseInQuad}).callMethod(() => this.path[0].occupant?.kill()).callMethod(() => this.addScore(1));
         for (idx = 1; idx < this.path.length; idx++) {
             const killIdx = idx;
             moveChain = moveChain.delay(delay);
             // todo: move speed frequently puts the player past the target location and then snaps them back, visibly.
             // can we fix it? somehow?
-            moveChain = moveChain.moveTo(this.path[idx].pos, moveSpeed);
+            moveChain = moveChain.moveTo({pos: this.path[idx].pos, duration: moveDuration, easing: EasingFunctions.EaseInQuad});
             moveChain = moveChain.callMethod(() => this.path[killIdx].occupant?.kill());
             moveChain = moveChain.callMethod(() => this.addScore(1));
             if (killIdx === 9) {
@@ -195,13 +198,13 @@ export class PlayerCharacter extends Actor {
                 moveChain = moveChain.callMethod(() => this.scene!.camera.zoomOverTime(1.05 + adder, 500, EasingFunctions.EaseInOutCubic));
             }
 
-            const moveSpeedBaseInt = Math.trunc(moveSpeed / 100);
-            const shakeXMin = Math.max(1, (moveSpeedBaseInt) - 2);
-            const shakeXMax = moveSpeedBaseInt;
+            const shakeScaler = Math.trunc(idx / 5);
+            const shakeXMin = Math.max(1, Math.min(3, shakeScaler));
+            const shakeXMax = Math.max(1, Math.min(5, shakeScaler + 2));
             moveChain = moveChain.callMethod(() => this.scene!.camera.shake(rand.integer(shakeXMin, shakeXMax), rand.integer(0, 2), delay));
 
-            delay = Math.max(delayMin, delay * 0.9);
-            moveSpeed = Math.min(moveSpeedMax, moveSpeed * 1.1);
+            delay = Math.max(delayMin, delay * 0.85);
+            moveDuration = Math.max(moveDurationMin, moveDuration * 0.85);
         }
 
         moveChain = moveChain.callMethod(() => {

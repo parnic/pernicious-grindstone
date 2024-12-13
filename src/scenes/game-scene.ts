@@ -1,4 +1,4 @@
-import { CollisionType, Color, Engine, Scene } from "excalibur";
+import { CollisionType, Color, EasingFunctions, Engine, Scene } from "excalibur";
 import { EnemyCharacter } from "../actors/enemy";
 import { Resources } from "../resource";
 import { rand } from "../utilities/math";
@@ -105,7 +105,7 @@ export class GameScene extends Scene {
   private spawnEnemy(c: Cell) {
     const enemy = new EnemyCharacter({
       x: c.pos.x,
-      y: c.pos.y - this.engine.canvasHeight,
+      y: -c.height,
       width: c.width,
       height: c.height,
       collisionType: CollisionType.PreventCollision,
@@ -121,7 +121,7 @@ export class GameScene extends Scene {
     // todo: they really should fall in rows to look nicer (filling in from the bottom up).
     // can we do that with a small delay per row? maybe track the number of unique y coordinates we've seen and map them to row number,
     // use that as an input to this?
-    enemy.actions.moveTo(c.pos, c.pos.y - enemy.pos.y);
+    enemy.actions.moveTo({pos: c.pos, duration: 600, easing: EasingFunctions.EaseInCubic});
   }
 
   public refillEnemies() {
@@ -159,7 +159,7 @@ export class GameScene extends Scene {
     // todo: pick an appropriate speed. this feels _okay_, but not great.
     // previously, sliding down happened over the same period of time as a new enemy spawning, so one was slow and the other was fast and it looked dumb.
     // i'd like to have them slide down together, but that means coordinating the two somehow.
-    source.occupant!.actions.moveTo(target.pos, 300);//target.pos.y - source.pos.y);
+    source.occupant!.actions.moveTo({pos: target.pos, duration: 250, easing: EasingFunctions.EaseInCubic})
 
     let occupant = source.occupant as EnemyCharacter;
     source.occupant = undefined;
