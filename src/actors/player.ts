@@ -1,4 +1,4 @@
-import { Actor, ActorArgs, Engine, Line, Logger, Vector } from "excalibur";
+import { Actor, ActorArgs, EasingFunctions, ElasticToActorStrategy, Engine, Line, Logger, Vector } from "excalibur";
 import { ResourceManager } from "../utilities/resource-manager";
 import { Cell } from "./cell";
 import { GameScene } from "../scenes/game-scene";
@@ -174,6 +174,8 @@ export class PlayerCharacter extends Actor {
         let delay = 100;
         const delayMin = 15;
         const moveSpeedMax = 600;
+        const camStrategy = new ElasticToActorStrategy(this, 0.1, 0.9);
+        const origCamPos = this.scene.camera.pos;
 
         let idx = 0;
         let moveChain = this.actions.moveTo(this.path[idx].pos, moveSpeed).callMethod(() => this.path[0].occupant?.kill()).callMethod(() => this.addScore(1));
@@ -183,6 +185,13 @@ export class PlayerCharacter extends Actor {
             moveChain = moveChain.moveTo(this.path[idx].pos, moveSpeed);
             moveChain = moveChain.callMethod(() => this.path[killIdx].occupant?.kill());
             moveChain = moveChain.callMethod(() => this.addScore(1));
+            if (killIdx === 9) {
+                moveChain = moveChain.callMethod(() => this.scene.camera.addStrategy(camStrategy));
+            }
+            if (killIdx % 9 === 0) {
+                const adder = killIdx / 900;
+                moveChain = moveChain.callMethod(() => this.scene.camera.zoomOverTime(1.05 + adder, 500, EasingFunctions.EaseInOutCubic));
+            }
 
             const moveSpeedBaseInt = Math.trunc(moveSpeed / 100);
             const shakeXMin = Math.max(1, (moveSpeedBaseInt) - 2);
@@ -199,8 +208,15 @@ export class PlayerCharacter extends Actor {
             this._cell.occupant = this;
             this.path.length = 0;
             this.updateScoreUi();
+        }).delay(
+            1500
+        ).callMethod(() => {
+            this.scene.camera.removeStrategy(camStrategy);
+            this.scene.camera.move(origCamPos, 250, EasingFunctions.EaseInOutCubic);
+            this.scene.camera.zoomOverTime(1, 250, EasingFunctions.EaseInOutCubic);
+
             this.gameScene.refillEnemies();
             this._going = false;
-        })
+        });
     }
 }

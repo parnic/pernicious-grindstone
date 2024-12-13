@@ -13,6 +13,7 @@ const engine = new Engine({
   suppressConsoleBootMessage: true,
   antialiasing: false,
   suppressHiDPIScaling: false,
+  snapToPixel: true,
 });
 
 calculateExPixelConversion(engine.screen);
