@@ -59,6 +59,8 @@ export class PlayerCharacter extends Actor {
         this.goButton.addEventListener('click', () => {
             this.go();
         });
+        this.goButton.classList.remove('hide');
+        this.goButton.classList.add('show');
     }
 
     public onPostUpdate(_engine: Engine, _delta: number): void {
