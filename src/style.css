@@ -41,3 +41,37 @@ body {
 .show {
   display: block;
 }
+
+#btnGo {
+  color: #fff;
+  font-weight: 800;
+  font-size: 1rem;
+  font-family: 'Silkscreen';
+  background-color: #404663;
+  border: none;
+  border-radius: .7rem;
+  display: flex;
+  gap: 1rem;
+  padding: .5rem 1rem;
+  box-shadow:
+  5px 5px 7px rgb(0 0 0 / .11),
+  10px 10px 15px rgb(0 0 0 / .11),
+  50px 50px 60px rgb(0 0 0 / .11);
+  transition: transform .2s ease;
+}
+
+#btnGo:active {
+  transform: scale(.9);
+}
+
+#btnGo:disabled {
+  color: #aaa;
+  background-color: #333;
+}
+
+#scoreElement {
+  position: absolute;
+  right: 0;
+  top: 0;
+  font-size: 3rem;
+}

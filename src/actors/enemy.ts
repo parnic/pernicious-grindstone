@@ -1,4 +1,4 @@
-import { Actor, ActorArgs, Color, Engine, Line, Sprite, vec } from "excalibur";
+import { ActionSequence, Actor, ActorArgs, Color, Engine, Line, ParallelActions, Scene, Sprite, vec, Vector } from "excalibur";
 import { ImageResources } from "../resource";
 import { rand } from "../utilities/math";
 import { Cell } from "./cell";
@@ -26,7 +26,41 @@ interface EnemySprites {
 }
 
 export function isHoverable(object: any): object is Hoverable {
-    return (object as Hoverable).hovered !== undefined;
+    return object && (object as Hoverable).hovered !== undefined;
+}
+
+export function spawnDieEffect(pos: Vector, scene: Scene): void {
+    const numFragments = rand.integer(5, 8);
+    for (let i = 0; i < numFragments; i++) {
+        const x = rand.integer(2, 5);
+        const y = rand.integer(2, 5);
+        const dir = vec(rand.integer(-12, 12), rand.integer(-12, 12));
+        const rot = rand.floating(0, Math.PI * 2);
+        const vel = rand.floating(0, Math.PI);
+        const color = new Color(rand.integer(100, 240), rand.integer(100, 240), rand.integer(100, 240), 1);//rand.floating(0.8, 0.95));
+        const act = new Actor({
+            x: pos.x,
+            y: pos.y,
+            width: x,
+            height: y,
+            rotation: rot,
+            angularVelocity: vel,
+            color: color,
+        })
+
+        const move = new ActionSequence(act, ctx => {
+            ctx.moveBy(dir, rand.integer(10, 20));
+        });
+
+        const fade = new ActionSequence(act, ctx => {
+            ctx.fade(0, rand.integer(800, 1500));
+        })
+
+        const parallel = new ParallelActions([move, fade]);
+        act.actions.runAction(parallel).die();
+
+        scene.add(act);
+    }
 }
 
 export class EnemyCharacter extends Actor implements Hoverable {
@@ -203,8 +237,12 @@ export class EnemyCharacter extends Actor implements Hoverable {
     }
 
     public onPostUpdate(_engine: Engine, _delta: number): void {
+        if (this.isKilled()) {
+            return;
+        }
+
         const pathTail = this.gameScene.player!.pathTail;
-        if (pathTail.occupant instanceof PlayerCharacter || (pathTail.occupant as EnemyCharacter).enemyType === this.enemyType) {
+        if (pathTail.occupant instanceof PlayerCharacter || (pathTail.occupant as EnemyCharacter)?.enemyType === this.enemyType) {
             this.setSpritesColor(Color.White);
         } else {
             this.setSpritesColor(this.fadedColor);
@@ -245,5 +283,13 @@ export class EnemyCharacter extends Actor implements Hoverable {
 
     public pointerdown() {
         this.selected = !this.selected;
+    }
+
+    onPreKill(_scene: Scene): void {
+        spawnDieEffect(this.pos, _scene);
+    }
+
+    onPostKill(_scene: Scene): void {
+        this.cell.occupant = undefined;
     }
 }

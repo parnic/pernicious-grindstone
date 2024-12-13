@@ -1,4 +1,4 @@
-import { Actor, ActorArgs, Engine, Line, Vector } from "excalibur";
+import { Actor, ActorArgs, Engine, Line, Logger, Vector } from "excalibur";
 import { ResourceManager } from "../utilities/resource-manager";
 import { Cell } from "./cell";
 import { GameScene } from "../scenes/game-scene";
@@ -9,8 +9,14 @@ export interface PlayerCharacterArgs extends ActorArgs {
 }
 
 export class PlayerCharacter extends Actor {
+    willScoreRoot: HTMLElement;
+    willScoreVal: HTMLElement;
     scoreRoot: HTMLElement;
     scoreVal: HTMLElement;
+    goButton: HTMLElement;
+
+    private _score: number = 0;
+    private _going: boolean = false;
 
     private _cell: Cell;
     public get cell() {
@@ -34,8 +40,11 @@ export class PlayerCharacter extends Actor {
         this._cell = config?.cell!;
         this._cell.occupant = this;
 
-        this.scoreRoot = document.getElementById('pathElement')!;
-        this.scoreVal = document.getElementById('pathScore')!;
+        this.willScoreRoot = document.getElementById('pathElement')!;
+        this.willScoreVal = document.getElementById('pathScore')!;
+        this.scoreRoot = document.getElementById('scoreElement')!;
+        this.scoreVal = document.getElementById('score')!;
+        this.goButton = document.getElementById('btnGo')!;
     }
 
     public onInitialize(_engine: Engine): void {
@@ -46,6 +55,10 @@ export class PlayerCharacter extends Actor {
         body.graphics.use(ResourceManager.getPlayerSprite());
 
         this.addChild(body);
+
+        this.goButton.addEventListener('click', () => {
+            this.go();
+        });
     }
 
     public onPostUpdate(_engine: Engine, _delta: number): void {
@@ -120,13 +133,15 @@ export class PlayerCharacter extends Actor {
 
     updateScoreUi() {
         if (this.path.length === 0) {
-            this.scoreRoot.classList.add('hide');
-            this.scoreRoot.classList.remove('show');
+            this.willScoreRoot.classList.add('hide');
+            this.willScoreRoot.classList.remove('show');
+            this.goButton.setAttribute("disabled", "true");
         } else {
-            this.scoreRoot.classList.add('show');
-            this.scoreRoot.classList.remove('hide');
+            this.willScoreRoot.classList.add('show');
+            this.willScoreRoot.classList.remove('hide');
+            this.goButton.removeAttribute("disabled");
         }
-        this.scoreVal.textContent = `${this.path.length}`;
+        this.willScoreVal.textContent = `${this.path.length}`;
     }
 
     public get pathTail(): Cell {
@@ -135,5 +150,40 @@ export class PlayerCharacter extends Actor {
         }
 
         return this.cell;
+    }
+
+    private addScore(points: number = 1) {
+        this._score += points;
+        this.scoreVal.textContent = `${this._score}`;
+
+        this.scoreRoot.classList.remove('hide');
+        this.scoreRoot.classList.add('show');
+    }
+
+    public go(): void {
+        if (this._going) {
+            return;
+        }
+
+        this._going = true;
+
+        let idx = 0;
+        let moveChain = this.actions.moveTo(this.path[idx].pos, 200).callMethod(() => this.path[0].occupant?.kill()).callMethod(() => this.addScore(1));
+        for (idx = 1; idx < this.path.length; idx++) {
+            const killIdx = idx;
+            moveChain = moveChain.delay(100);
+            moveChain = moveChain.moveTo(this.path[idx].pos, 200);
+            moveChain = moveChain.callMethod(() => this.path[killIdx].occupant?.kill());
+            moveChain = moveChain.callMethod(() => this.addScore(1));
+        }
+
+        moveChain = moveChain.callMethod(() => {
+            this._cell.occupant = undefined;
+            this._cell = this.path[this.path.length - 1];
+            this._cell.occupant = this;
+            this.path.length = 0;
+            this.updateScoreUi();
+            this._going = false;
+        })
     }
 }
