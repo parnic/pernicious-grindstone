@@ -1,30 +1,30 @@
 {
   "private": true,
-  "name": "pernicions-grindstone",
+  "name": "pernicious-grindstone",
   "version": "1.0.0",
+  "alias": {
+    "JSDOM": false
+  },
   "scripts": {
     "clean": "git clean -fdx --exclude .vscode --exclude TODO.md",
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "serve": "vite preview"
+    "dev": "parcel serve ./index.html",
+    "build": "parcel build ./index.html --dist-dir ./dist --public-url /pernicious-grindstone/"
   },
   "author": "chris pickett <chris.pickett@tanium.com> (https://github.com/parnic)",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/parnic/pernicions-grindstone.git"
+    "url": "git+https://github.com/parnic/pernicious-grindstone.git"
   },
-  "bugs": {
-    "url": "https://github.com/parnic/pernicions-grindstone/issues"
-  },
-  "homepage": "https://github.com/parnic/pernicions-grindstone",
+  "homepage": "https://parnic.github.io/pernicious-grindstone/",
   "dependencies": {
-    "@excaliburjs/plugin-tiled": "^0.30.0",
-    "excalibur": "^0.30.1",
-    "typescript": "^5.7.2",
-    "vite": "6.0.3"
+    "@excaliburjs/plugin-tiled": "0.30.0",
+    "excalibur": "0.30.1"
   },
   "devDependencies": {
-    "prettier": "^3.4.2"
+    "buffer": "^6.0.3",
+    "parcel": "2.13.2",
+    "prettier": "^3.4.2",
+    "typescript": "5.7.2"
   }
 }

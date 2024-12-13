@@ -1,29 +1,34 @@
 import { TiledResource } from "@excaliburjs/plugin-tiled";
 import { ImageSource } from "excalibur";
 
-const tiledMapTmx = `stage-01.tmx`;
+import imageEnemyType01 from '../img/kenney-shape-characters/blue_body_circle.png'
+import imageEnemyType02 from '../img/kenney-shape-characters/red_body_square.png'
+import imageEnemyType03 from '../img/kenney-shape-characters/purple_body_rhombus.png'
 
-const spriteSheet = `img/kenney-pixel-shmup/tiles_packed.png`
+import imageEnemyFaceHappy from '../img/kenney-shape-characters/face_a.png'
+import imageEnemyFaceAnnoyed from '../img/kenney-shape-characters/face_b.png'
+import imageEnemyFaceHopeful from '../img/kenney-shape-characters/face_c.png'
+import imageEnemyFaceSnarky from '../img/kenney-shape-characters/face_d.png'
+import imageEnemyFacePlanning from '../img/kenney-shape-characters/face_e.png'
+import imageEnemyFaceAggressive from '../img/kenney-shape-characters/face_f.png'
+import imageEnemyFaceAngry from '../img/kenney-shape-characters/face_g.png'
+import imageEnemyFaceSmirking from '../img/kenney-shape-characters/face_h.png'
+import imageEnemyFaceSurprised from '../img/kenney-shape-characters/face_i.png'
+import imageEnemyFaceDead from '../img/kenney-shape-characters/face_j.png'
+import imageEnemyFaceSurprisedBlinking from '../img/kenney-shape-characters/face_k.png'
+import imageEnemyFaceHopefulBlinking from '../img/kenney-shape-characters/face_l.png'
 
-const imageEnemyType01 = `img/kenney-shape-characters/blue_body_circle.png`;
-const imageEnemyType02 = `img/kenney-shape-characters/red_body_square.png`;
-const imageEnemyType03 = `img/kenney-shape-characters/purple_body_rhombus.png`;
-
-const imageEnemyFaceHappy = `img/kenney-shape-characters/face_a.png`
-const imageEnemyFaceAnnoyed = `img/kenney-shape-characters/face_b.png`
-const imageEnemyFaceHopeful = `img/kenney-shape-characters/face_c.png`
-const imageEnemyFaceSnarky = `img/kenney-shape-characters/face_d.png`
-const imageEnemyFacePlanning = `img/kenney-shape-characters/face_e.png`
-const imageEnemyFaceAggressive = `img/kenney-shape-characters/face_f.png`
-const imageEnemyFaceAngry = `img/kenney-shape-characters/face_g.png`
-const imageEnemyFaceSmirking = `img/kenney-shape-characters/face_h.png`
-const imageEnemyFaceSurprised = `img/kenney-shape-characters/face_i.png`
-const imageEnemyFaceDead = `img/kenney-shape-characters/face_j.png`
-const imageEnemyFaceSurprisedBlinking = `img/kenney-shape-characters/face_k.png`
-const imageEnemyFaceHopefulBlinking = `img/kenney-shape-characters/face_l.png`
+import tmxPath from '../res/stage-01.tmx';
+import spriteSheet from '../img/kenney-pixel-shmup/tiles_packed.png';
+import tsxPath from '../res/kenney-pixel-shmup.tsx';
 
 export const Resources = {
-  tiledmap: new TiledResource(tiledMapTmx),
+  tiledmap: new TiledResource(tmxPath, {
+    pathMap: [
+      { path: 'tiles_packed.png', output: spriteSheet },
+      { path: 'kenney-pixel-shmup.tsx', output: tsxPath }
+    ]
+  }),
   spritesheet: new ImageSource(spriteSheet),
 };
 
