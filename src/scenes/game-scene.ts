@@ -46,19 +46,7 @@ export class GameScene extends Scene {
     if (!enemies) throw Error(`cannot find "enemies".`);
     for (let e of enemies) {
       let cell = this.addCell(engine, e.x, e.y, e.width!, e.height!);
-
-      const enemy = new EnemyCharacter({
-        x: e.x + (e.width! / 2),
-        y: e.y + (e.height! / 2),
-        width: e.width,
-        height: e.height,
-        collisionType: CollisionType.PreventCollision,
-        color: Color.Transparent,
-        enemyType: rand.integer(0, 2),
-        cell: cell,
-      })
-
-      this.add(enemy);
+      this.spawnEnemy(cell);
     }
 
     this.cells.sort((a, b) => {
@@ -111,5 +99,26 @@ export class GameScene extends Scene {
     this.cells.push(cell);
 
     return cell;
+  }
+
+  private spawnEnemy(c: Cell) {
+    const enemy = new EnemyCharacter({
+      x: c.pos.x,
+      y: c.pos.y,
+      width: c.width,
+      height: c.height,
+      collisionType: CollisionType.PreventCollision,
+      color: Color.Transparent,
+      enemyType: rand.integer(0, 2),
+      cell: c,
+    })
+
+    c.occupant = enemy;
+
+    this.add(enemy);
+  }
+
+  public refillEnemies() {
+    this.cells.filter(c => !c.occupant).forEach(c => this.spawnEnemy(c));
   }
 }

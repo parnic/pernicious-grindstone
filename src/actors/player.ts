@@ -183,6 +183,7 @@ export class PlayerCharacter extends Actor {
             this._cell.occupant = this;
             this.path.length = 0;
             this.updateScoreUi();
+            this.gameScene.refillEnemies();
             this._going = false;
         })
     }
