@@ -104,21 +104,66 @@ export class GameScene extends Scene {
   private spawnEnemy(c: Cell) {
     const enemy = new EnemyCharacter({
       x: c.pos.x,
-      y: c.pos.y,
+      y: c.pos.y - this.engine.canvasHeight,
       width: c.width,
       height: c.height,
       collisionType: CollisionType.PreventCollision,
       color: Color.Transparent,
       enemyType: rand.integer(0, 2),
       cell: c,
-    })
+    });
 
     c.occupant = enemy;
 
     this.add(enemy);
+
+    // todo: they really should fall in rows to look nicer (filling in from the bottom up).
+    // can we do that with a small delay per row? maybe track the number of unique y coordinates we've seen and map them to row number,
+    // use that as an input to this?
+    enemy.actions.moveTo(c.pos, c.pos.y - enemy.pos.y);
   }
 
   public refillEnemies() {
-    this.cells.filter(c => !c.occupant).forEach(c => this.spawnEnemy(c));
+    var emptyCells = this.cells.filter(c => !c.occupant).sort((a, b) => a.pos.x - b.pos.x);
+    for (let i = 0; i < emptyCells.length;) {
+      var numInCol = 1;
+      while (i + numInCol < emptyCells.length && emptyCells[i + numInCol].pos.x == emptyCells[i].pos.x) {
+        numInCol++;
+      }
+
+      const filledCellsInCol = this.cells.filter(c => c.occupant !== undefined && c.pos.x == emptyCells[i].pos.x).sort((a, b) => b.pos.y - a.pos.y);
+      for (const cell of filledCellsInCol) {
+        if (cell.occupant instanceof PlayerCharacter) {
+          continue;
+        }
+
+        const targetCell = cell.getFurthestUnoccupiedCellBeneath();
+        // occupied cells beneath the empty cell shouldn't try to slide
+        if (!targetCell) {
+          continue;
+        }
+        this.slideOccupantToNewCell(cell, targetCell!);
+      }
+
+      const topEmptyCells = this.cells.filter(c => !c.occupant && c.pos.x == emptyCells[i].pos.x).sort((a, b) => a.pos.y - b.pos.y);
+      for (let j = 0; j < numInCol; j++) {
+        this.spawnEnemy(topEmptyCells[numInCol - j - 1]);
+      }
+
+      i += numInCol;
+    }
+  }
+
+  public slideOccupantToNewCell(source: Cell, target: Cell) {
+    // todo: pick an appropriate speed. this feels _okay_, but not great.
+    // previously, sliding down happened over the same period of time as a new enemy spawning, so one was slow and the other was fast and it looked dumb.
+    // i'd like to have them slide down together, but that means coordinating the two somehow.
+    source.occupant!.actions.moveTo(target.pos, 300);//target.pos.y - source.pos.y);
+
+    let occupant = source.occupant as EnemyCharacter;
+    source.occupant = undefined;
+    target.occupant = occupant;
+
+    occupant.cell = target;
   }
 }

@@ -71,6 +71,9 @@ export class EnemyCharacter extends Actor implements Hoverable {
     public get cell() {
         return this._cell;
     }
+    public set cell(c: Cell) {
+        this._cell = c;
+    }
 
     public get gameScene() {
         return this.scene as GameScene;
