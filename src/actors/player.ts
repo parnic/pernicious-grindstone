@@ -3,6 +3,7 @@ import { ResourceManager } from "../utilities/resource-manager";
 import { Cell } from "./cell";
 import { GameScene } from "../scenes/game-scene";
 import { EnemyCharacter, isHoverable } from "./enemy";
+import { rand } from "../utilities/math";
 
 export interface PlayerCharacterArgs extends ActorArgs {
     cell: Cell;
@@ -182,6 +183,11 @@ export class PlayerCharacter extends Actor {
             moveChain = moveChain.moveTo(this.path[idx].pos, moveSpeed);
             moveChain = moveChain.callMethod(() => this.path[killIdx].occupant?.kill());
             moveChain = moveChain.callMethod(() => this.addScore(1));
+
+            const moveSpeedBaseInt = Math.trunc(moveSpeed / 100);
+            const shakeXMin = Math.max(1, (moveSpeedBaseInt) - 2);
+            const shakeXMax = moveSpeedBaseInt;
+            moveChain = moveChain.callMethod(() => this.scene.camera.shake(rand.integer(shakeXMin, shakeXMax), rand.integer(0, 2), delay));
 
             delay = Math.max(delayMin, delay * 0.9);
             moveSpeed = Math.min(moveSpeedMax, moveSpeed * 1.1);
