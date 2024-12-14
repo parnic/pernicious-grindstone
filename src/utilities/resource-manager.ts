@@ -23,10 +23,10 @@ export class ResourceManager {
       },
     });
 
-    const sprite = bodySpriteSheet.getSprite(5, 1)!;
+    const sprite = bodySpriteSheet.getSprite(3, 0)!;//5, 1)!;
     sprite.width = 16;
     sprite.height = 16;
-    sprite.rotation = Math.PI;
+    // sprite.rotation = Math.PI;
     return sprite;
   }
 }
