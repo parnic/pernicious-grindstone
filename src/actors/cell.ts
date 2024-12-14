@@ -35,7 +35,7 @@ export class Cell extends Actor implements Hoverable {
         return this._hovered;
     }
     public set hovered(newHovered: boolean) {
-        if (this._hovered == newHovered || !this.occupant || this.occupant instanceof PlayerCharacter) {
+        if (this._hovered == newHovered || !this.occupant || (this.occupant instanceof PlayerCharacter && newHovered)) {
             return;
         }
 
