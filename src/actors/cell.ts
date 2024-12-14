@@ -3,22 +3,24 @@ import { GameScene } from "../scenes/game-scene";
 import { PlayerCharacter } from "./player";
 import { EnemyCharacter, Hoverable, isHoverable } from "./enemy";
 
+export interface CellOccupant extends Actor {
+    canHover(pathTail: Cell): boolean
+}
+
 export type CellArgs = ActorArgs & {
 }
 
 export class Cell extends Actor implements Hoverable {
-    public pointerWasMove: boolean = false;
-
     private _desiredHoverColor: Color = Color.Transparent;
     private _validHoverColor: Color = new Color(240, 240, 240, 0.6);
     private _invalidHoverColor: Color = Color.Red;
     private _box: Rectangle;
 
-    private _occupant?: Actor;
+    private _occupant?: CellOccupant;
     public get occupant() {
         return this._occupant;
     }
-    public set occupant(actor: Actor | undefined) {
+    public set occupant(actor: CellOccupant | undefined) {
         this._occupant = actor;
     }
 
@@ -40,19 +42,12 @@ export class Cell extends Actor implements Hoverable {
         this._hovered = newHovered;
 
         if (this.hovered) {
-            let pathTail = this.gameScene.player!.pathTail;
-            let pathTailOccupant = pathTail.occupant as EnemyCharacter | PlayerCharacter;
-            const pathTailEnemyType = (pathTailOccupant as EnemyCharacter)?.enemyType;
-
-            const occupantEnemyType = (this.occupant as EnemyCharacter)?.enemyType;
-
-            const occupantSameTypeAsPathTail = (pathTailOccupant instanceof PlayerCharacter) || pathTailEnemyType === occupantEnemyType;
-
+            const pathTail = this.gameScene.player!.pathTail;
             const neighbors = this.gameScene.player!.pathTail.getNeighbors();
 
             if ((neighbors.includes(this) || this == pathTail ||
                 (isHoverable(this.occupant) && this.occupant.selected)) &&
-                occupantSameTypeAsPathTail) {
+                this.occupant && this.occupant.canHover(pathTail)) {
                 this._desiredHoverColor = this._validHoverColor;
 
                 if (isHoverable(this.occupant)) {

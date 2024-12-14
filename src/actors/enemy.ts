@@ -1,7 +1,7 @@
-import { ActionSequence, Actor, ActorArgs, Color, Engine, Line, ParallelActions, Scene, Sprite, vec, Vector } from "excalibur";
+import { ActionSequence, Actor, ActorArgs, Color, EmitterType, Engine, GpuParticleEmitter, Line, ParallelActions, ParticleTransform, Scene, Sprite, vec, Vector } from "excalibur";
 import { ImageResources } from "../resource";
 import { rand } from "../utilities/math";
-import { Cell } from "./cell";
+import { Cell, CellOccupant } from "./cell";
 import { GameScene } from "../scenes/game-scene";
 import { PlayerCharacter } from "./player";
 
@@ -30,6 +30,36 @@ export function isHoverable(object: any): object is Hoverable {
 }
 
 export function spawnDieEffect(pos: Vector, scene: Scene): void {
+    // var emitter = new GpuParticleEmitter({
+    //     pos: pos,
+    //     emitRate: 100,
+    //     maxParticles: rand.integer(8, 15),
+    //     emitterType: EmitterType.Rectangle,
+    //     width: 16,
+    //     height: 16,
+    //     // radius: 10,
+    //     random: rand,
+    //     particle: {
+    //         pos: pos,
+    //         beginColor: Color.Red,
+    //         endColor: Color.White,
+    //         fade: true,
+    //         opacity: 1,
+    //         vel: vec(rand.floating(0, Math.PI), rand.floating(0, Math.PI)),
+    //         focus: vec(rand.integer(-12, 12), rand.integer(-12, 12)),
+    //         startSize: rand.integer(2, 5),
+    //         endSize: rand.integer(2, 5),
+    //         life: rand.integer(300, 500),
+    //         minSpeed: 10,
+    //         maxSpeed: 20,
+    //         angularVelocity: 4,
+    //         randomRotation: true,
+    //         transform: ParticleTransform.Local
+    //     },
+    // });
+    // emitter.isEmitting = true;
+    // emitter.actions.delay(rand.integer(300, 500)).die();
+    // scene.add(emitter);
     const numFragments = rand.integer(5, 8);
     for (let i = 0; i < numFragments; i++) {
         const x = rand.integer(2, 5);
@@ -63,7 +93,7 @@ export function spawnDieEffect(pos: Vector, scene: Scene): void {
     }
 }
 
-export class EnemyCharacter extends Actor implements Hoverable {
+export class EnemyCharacter extends Actor implements Hoverable, CellOccupant {
     public enemyType: number = 0;
     private fadedColor: Color = new Color(127, 127, 127, 0.5);
 
@@ -294,5 +324,13 @@ export class EnemyCharacter extends Actor implements Hoverable {
 
     onPostKill(_scene: Scene): void {
         this.cell.occupant = undefined;
+    }
+
+    canHover(pathTail: Cell): boolean {
+        const pathTailOccupant = pathTail.occupant as EnemyCharacter | PlayerCharacter;
+        const pathTailEnemyType = (pathTailOccupant as EnemyCharacter)?.enemyType;
+        const occupantEnemyType = this.enemyType;
+        const occupantSameTypeAsPathTail = (pathTailOccupant instanceof PlayerCharacter) || pathTailEnemyType === occupantEnemyType;
+        return occupantSameTypeAsPathTail;
     }
 }

@@ -4,7 +4,9 @@ import { Resources } from "../resource";
 import { rand } from "../utilities/math";
 import { PlayerCharacter } from "../actors/player";
 import { Cell } from "../actors/cell";
-import { InsertedTile } from "@excaliburjs/plugin-tiled";
+import { InsertedTile, TiledObjectLayer, TiledResource } from "@excaliburjs/plugin-tiled";
+import { Exit } from "../actors/exit";
+import { ObjectLayer } from "@excaliburjs/plugin-tiled/dist/src/resource/object-layer";
 
 export class GameScene extends Scene {
   private _cells: Cell[] = [];
@@ -17,6 +19,11 @@ export class GameScene extends Scene {
     return this._player;
   }
 
+  private _exit?: Exit;
+  public get exit() {
+    return this._exit;
+  }
+
   private _pointerDown: Boolean = false;
   public get pointerDown(): Boolean {
     return this._pointerDown;
@@ -26,29 +33,9 @@ export class GameScene extends Scene {
     Resources.tiledmap.addToScene(this);
     const objects = Resources.tiledmap.getObjectLayers('obje');
 
-    const playerStart = objects[0]?.getObjectsByName("player_start")[0] as InsertedTile;
-    if (!playerStart) {
-      throw Error(`cannot find "player_start" object in tilemap`);
-    }
-
-    let cell = this.addCell(playerStart.x, playerStart.y, playerStart.width!, playerStart.height!);
-
-    this._player = new PlayerCharacter({
-      x: playerStart.x + (playerStart.width! / 2),
-      y: playerStart.y + (playerStart.width! / 2),
-      width: playerStart.width,
-      height: playerStart.height,
-      collisionType: CollisionType.PreventCollision,
-      cell: cell,
-    });
-    this.add(this.player!);
-
-    const enemies = objects[0]?.getObjectsByName("enemy");
-    if (!enemies) throw Error(`cannot find "enemies".`);
-    for (let e of enemies.map((enemy) => enemy as InsertedTile)) {
-      let cell = this.addCell(e.x, e.y, e.width!, e.height!);
-      this.spawnEnemy(cell);
-    }
+    this.addPlayer(objects[0]);
+    this.addEnemies(objects[0]);
+    this.addExit(objects[0]);
 
     this.cells.sort((a, b) => {
       if (a.pos.y != b.pos.y) {
@@ -77,6 +64,59 @@ export class GameScene extends Scene {
         }
       }
     });
+  }
+
+  addPlayer(layer: ObjectLayer) {
+    const playerStart = layer.getObjectsByName("player_start")[0] as InsertedTile;
+    if (!playerStart) {
+      throw Error(`cannot find "player_start" object in tilemap`);
+    }
+
+    let cell = this.addCell(playerStart.x, playerStart.y, playerStart.width, playerStart.height);
+
+    this._player = new PlayerCharacter({
+      x: playerStart.x + (playerStart.width / 2),
+      y: playerStart.y + (playerStart.width / 2),
+      width: playerStart.width,
+      height: playerStart.height,
+      collisionType: CollisionType.PreventCollision,
+      cell: cell,
+    });
+    this.add(this.player!);
+  }
+
+  addEnemies(layer: ObjectLayer) {
+    const enemies = layer.getObjectsByName("enemy");
+    if (!enemies) {
+      throw Error(`cannot find "enemy".`);
+    }
+
+    for (let e of enemies.map((enemy) => enemy as InsertedTile)) {
+      let cell = this.addCell(e.x, e.y, e.width, e.height);
+      this.spawnEnemy(cell);
+    }
+  }
+
+  addExit(layer: ObjectLayer) {
+    const exit = layer.getObjectsByName('exit');
+    if (!exit || exit.length != 1) {
+      throw Error(`cannot find "exit".`);
+    }
+    const exitTile = exit[0] as InsertedTile;
+    if (!exitTile) {
+      throw Error(`"exit" tile not of expected type`);
+    }
+
+    let cell = this.addCell(exitTile.x, exitTile.y, exitTile.width, exitTile.height);
+
+    this._exit = new Exit({
+      x: exitTile.x + (exitTile.width / 2),
+      y: exitTile.y + (exitTile.height / 2),
+      width: exitTile.width,
+      height: exitTile.height,
+      cell: cell,
+    });
+    this.add(this._exit!);
   }
 
   addCell(x: number, y: number, width: number, height: number): Cell {

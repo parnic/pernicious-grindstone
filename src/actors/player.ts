@@ -1,6 +1,6 @@
 import { Actor, ActorArgs, EasingFunctions, ElasticToActorStrategy, Engine, Keys, Line, Logger, Vector } from "excalibur";
 import { ResourceManager } from "../utilities/resource-manager";
-import { Cell } from "./cell";
+import { Cell, CellOccupant } from "./cell";
 import { GameScene } from "../scenes/game-scene";
 import { EnemyCharacter, isHoverable } from "./enemy";
 import { rand } from "../utilities/math";
@@ -9,7 +9,7 @@ export type PlayerCharacterArgs = ActorArgs & {
     cell: Cell;
 }
 
-export class PlayerCharacter extends Actor {
+export class PlayerCharacter extends Actor implements CellOccupant {
     willScoreRoot: HTMLElement;
     willScoreVal: HTMLElement;
     scoreRoot: HTMLElement;
@@ -46,6 +46,10 @@ export class PlayerCharacter extends Actor {
         this.scoreRoot = document.getElementById('scoreElement')!;
         this.scoreVal = document.getElementById('score')!;
         this.goButton = document.getElementById('btnGo')!;
+    }
+
+    canHover(pathTail: Cell): boolean {
+        return false;
     }
 
     public onInitialize(_engine: Engine): void {
