@@ -1,4 +1,4 @@
-import { Actor, ActorArgs, EasingFunctions, ElasticToActorStrategy, Engine, Line, Logger, Vector } from "excalibur";
+import { Actor, ActorArgs, EasingFunctions, ElasticToActorStrategy, Engine, Keys, Line, Logger, Vector } from "excalibur";
 import { ResourceManager } from "../utilities/resource-manager";
 import { Cell } from "./cell";
 import { GameScene } from "../scenes/game-scene";
@@ -62,6 +62,12 @@ export class PlayerCharacter extends Actor {
         });
         this.goButton.classList.remove('hide');
         this.goButton.classList.add('show');
+
+        _engine.input.keyboard.on('release', evt => {
+            if (evt.key == Keys.Space) {
+                this.go();
+            }
+        });
     }
 
     public onPostUpdate(_engine: Engine, _delta: number): void {
@@ -164,7 +170,7 @@ export class PlayerCharacter extends Actor {
     }
 
     public go(): void {
-        if (this._going) {
+        if (this._going || this.path.length === 0) {
             return;
         }
 
