@@ -31,7 +31,7 @@ export class GameScene extends Scene {
       throw Error(`cannot find "player_start" object in tilemap`);
     }
 
-    let cell = this.addCell(engine, playerStart.x, playerStart.y, playerStart.width!, playerStart.height!);
+    let cell = this.addCell(playerStart.x, playerStart.y, playerStart.width!, playerStart.height!);
 
     this._player = new PlayerCharacter({
       x: playerStart.x + (playerStart.width! / 2),
@@ -46,7 +46,7 @@ export class GameScene extends Scene {
     const enemies = objects[0]?.getObjectsByName("enemy");
     if (!enemies) throw Error(`cannot find "enemies".`);
     for (let e of enemies.map((enemy) => enemy as InsertedTile)) {
-      let cell = this.addCell(engine, e.x, e.y, e.width!, e.height!);
+      let cell = this.addCell(e.x, e.y, e.width!, e.height!);
       this.spawnEnemy(cell);
     }
 
@@ -64,9 +64,22 @@ export class GameScene extends Scene {
     engine.input.pointers.primary.on('up', () => {
       this._pointerDown = false;
     });
+    engine.input.pointers.primary.on('move', evt => {
+      for (let c of this.cells) {
+        const upperBound = c.pos.y - (c.height / 2);
+        const leftBound = c.pos.x - (c.width / 2);
+        const lowerBound = c.pos.y + (c.height / 2);
+        const rightBound = c.pos.x + (c.width / 2);
+        c.hovered = evt.worldPos.x >= leftBound && evt.worldPos.y >= upperBound && evt.worldPos.x <= rightBound && evt.worldPos.y <= lowerBound;
+
+        if (this._pointerDown && !(c.occupant instanceof PlayerCharacter) && c !== this.player?.pathTail) {
+          c.pointerdown();
+        }
+      }
+    });
   }
 
-  addCell(engine: Engine, x: number, y: number, width: number, height: number): Cell {
+  addCell(x: number, y: number, width: number, height: number): Cell {
     let cell = new Cell({
       x: x + (width / 2),
       y: y + (height / 2),
@@ -74,28 +87,11 @@ export class GameScene extends Scene {
       height: height,
       color: Color.Transparent,
     });
-    cell.on('pointerenter', () => {
-      cell.hovered = true;
 
-      if (this._pointerDown && !(cell.occupant instanceof PlayerCharacter) && cell !== this.player?.pathTail) {
-        cell.pointerdown();
-      }
-    });
-    cell.on('pointermove', () => {
-      cell.pointerWasMove = true;
-    });
     cell.on('pointerdown', () => {
-      // excalibur seems to generate a pointerleave event after a click. ignore those.
-      cell.pointerWasMove = false;
       cell.pointerdown();
     });
-    cell.on('pointerleave', () => {
-      if (!cell.pointerWasMove) {
-        return;
-      }
 
-      cell.hovered = false;
-    });
     this.add(cell);
     this.cells.push(cell);
 
