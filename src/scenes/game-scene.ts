@@ -168,7 +168,11 @@ export class GameScene extends Scene {
         numInCol++;
       }
 
-      const filledCellsInCol = this.cells.filter(c => c.occupant !== undefined && c.pos.x == emptyCells[i].pos.x).sort((a, b) => b.pos.y - a.pos.y);
+      const filledCellsInCol = this.cells.filter(
+        c => c.occupant instanceof EnemyCharacter && c.pos.x == emptyCells[i].pos.x
+      ).sort(
+        (a, b) => b.pos.y - a.pos.y
+      );
       for (const cell of filledCellsInCol) {
         if (cell.occupant instanceof PlayerCharacter) {
           continue;
