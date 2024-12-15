@@ -235,7 +235,7 @@ export class PlayerCharacter extends Actor implements CellOccupant {
             this.path.length = 0;
             this.updateScoreUi();
         }).delay(
-            1500
+            1000
         ).callMethod(() => {
             this.scene!.camera.removeStrategy(camStrategy);
             this.scene!.camera.move(origCamPos, 250, EasingFunctions.EaseInOutCubic);
