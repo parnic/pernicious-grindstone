@@ -90,7 +90,7 @@ export class GameScene extends Scene {
     } else if (targetScoreProp.type !== 'int') {
       Logger.getInstance().warn(`target-score property on map is not of type int; will use default value of ${this._targetScore}`);
     } else {
-      this._targetScore = 10;//targetScoreProp.value;
+      this._targetScore = targetScoreProp.value;
     }
     this.targetScoreVal.textContent = `${this._targetScore}`;
 
