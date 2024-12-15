@@ -118,11 +118,17 @@ export class GameScene extends Scene {
     });
     engine.input.pointers.primary.on('move', evt => {
       for (let c of this.cells) {
-        const upperBound = c.pos.y - (c.height / 2);
-        const leftBound = c.pos.x - (c.width / 2);
-        const lowerBound = c.pos.y + (c.height / 2);
-        const rightBound = c.pos.x + (c.width / 2);
-        c.hovered = evt.worldPos.x >= leftBound && evt.worldPos.y >= upperBound && evt.worldPos.x <= rightBound && evt.worldPos.y <= lowerBound;
+        // rectangular hover
+        // const upperBound = c.pos.y - (c.height / 2);
+        // const leftBound = c.pos.x - (c.width / 2);
+        // const lowerBound = c.pos.y + (c.height / 2);
+        // const rightBound = c.pos.x + (c.width / 2);
+        // c.hovered = evt.worldPos.x >= leftBound && evt.worldPos.y >= upperBound && evt.worldPos.x <= rightBound && evt.worldPos.y <= lowerBound;
+
+        // circular hover
+        const lenSq = evt.worldPos.squareDistance(c.pos);
+        const requiredDist = Math.pow(c.width / 2, 2);
+        c.hovered = lenSq <= requiredDist;
 
         if (this._pointerDown && !(c.occupant instanceof PlayerCharacter) && c !== this.player?.pathTail) {
           c.pointerdown();
