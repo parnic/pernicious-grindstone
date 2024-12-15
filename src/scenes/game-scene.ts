@@ -1,4 +1,4 @@
-import { CollisionType, Color, EasingFunctions, Engine, Logger, Scene } from "excalibur";
+import { ActorEvents, CollisionType, Color, EasingFunctions, Engine, EventEmitter, GameEvent, Logger, Scene, SceneEvents } from "excalibur";
 import { EnemyCharacter } from "../actors/enemy";
 import { Resources } from "../resource";
 import { rand } from "../utilities/math";
@@ -8,7 +8,25 @@ import { InsertedTile, TiledObjectLayer, TiledResource } from "@excaliburjs/plug
 import { Exit } from "../actors/exit";
 import { ObjectLayer } from "@excaliburjs/plugin-tiled/dist/src/resource/object-layer";
 
+type GameSceneEvents = {
+  TargetScoreReached: TargetScoreReachedEvent;
+}
+
+export class TargetScoreReachedEvent extends GameEvent<number> {
+  constructor(public currScore: number) {
+    super();
+  }
+}
+
+export const GameSceneEvents = {
+  TargetScoreReached: 'targetscorereached'
+} as const;
+
 export class GameScene extends Scene {
+  public events = new EventEmitter<SceneEvents & GameSceneEvents>();
+
+  private targetScoreVal: HTMLElement;
+
   private _cells: Cell[] = [];
   public get cells() {
     return this._cells;
@@ -34,6 +52,12 @@ export class GameScene extends Scene {
     return this._targetScore;
   }
 
+  constructor() {
+    super();
+
+    this.targetScoreVal = document.getElementById('targetScore')!;
+  }
+
   onInitialize(engine: Engine): void {
     Resources.tiledmap.addToScene(this);
     const targetScoreProp = Resources.tiledmap.map.properties?.find(p => p.name === "target-score");
@@ -44,7 +68,7 @@ export class GameScene extends Scene {
     } else {
       this._targetScore = targetScoreProp.value;
     }
-    // this.targetScoreVal.textContent = `${this._targetScore}`;
+    this.targetScoreVal.textContent = `${this._targetScore}`;
 
     const objects = Resources.tiledmap.getObjectLayers('obje');
     this.addPlayer(objects[0]);

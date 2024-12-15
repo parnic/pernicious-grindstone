@@ -4,6 +4,7 @@ import { rand } from "../utilities/math";
 import { Cell, CellOccupant } from "./cell";
 import { GameScene } from "../scenes/game-scene";
 import { PlayerCharacter } from "./player";
+import { Exit } from "./exit";
 
 export type EnemyCharacterArgs = ActorArgs & {
     enemyType: number;
@@ -274,7 +275,12 @@ export class EnemyCharacter extends Actor implements Hoverable, CellOccupant {
             return;
         }
 
-        const pathTail = this.gameScene.player!.pathTail;
+        let pathTail = this.gameScene.player!.pathTail;
+        if (pathTail.occupant instanceof Exit) {
+            if (this.gameScene.player!.path.length > 1) {
+                pathTail = this.gameScene.player!.path[this.gameScene.player!.path.length - 2];
+            }
+        }
         if (pathTail.occupant instanceof PlayerCharacter || (pathTail.occupant as EnemyCharacter)?.enemyType === this.enemyType) {
             this.setSpritesColor(Color.White);
         } else {
@@ -327,6 +333,10 @@ export class EnemyCharacter extends Actor implements Hoverable, CellOccupant {
     }
 
     canHover(pathTail: Cell): boolean {
+        if (this.selected) {
+            return true;
+        }
+
         const pathTailOccupant = pathTail.occupant as EnemyCharacter | PlayerCharacter;
         const pathTailEnemyType = (pathTailOccupant as EnemyCharacter)?.enemyType;
         const occupantEnemyType = this.enemyType;

@@ -1,7 +1,7 @@
 import { Actor, ActorArgs, EasingFunctions, ElasticToActorStrategy, Engine, Keys, Line, Logger, Vector } from "excalibur";
 import { ResourceManager } from "../utilities/resource-manager";
 import { Cell, CellOccupant } from "./cell";
-import { GameScene } from "../scenes/game-scene";
+import { GameScene, GameSceneEvents, TargetScoreReachedEvent } from "../scenes/game-scene";
 import { EnemyCharacter, isHoverable } from "./enemy";
 import { rand } from "../utilities/math";
 
@@ -10,13 +10,17 @@ export type PlayerCharacterArgs = ActorArgs & {
 }
 
 export class PlayerCharacter extends Actor implements CellOccupant {
-    willScoreRoot: HTMLElement;
-    willScoreVal: HTMLElement;
-    scoreRoot: HTMLElement;
-    scoreVal: HTMLElement;
-    goButton: HTMLElement;
+    private willScoreRoot: HTMLElement;
+    private willScoreVal: HTMLElement;
+    private scoreRoot: HTMLElement;
+    private scoreVal: HTMLElement;
+    private goButton: HTMLElement;
 
     private _score: number = 0;
+    public get score() {
+        return this._score;
+    }
+
     private _going: boolean = false;
 
     private _cell: Cell;
@@ -66,6 +70,9 @@ export class PlayerCharacter extends Actor implements CellOccupant {
         });
         this.goButton.classList.remove('hide');
         this.goButton.classList.add('show');
+
+        this.scoreRoot.classList.remove('hide');
+        this.scoreRoot.classList.add('show');
 
         _engine.input.keyboard.on('release', evt => {
             if (evt.key == Keys.Space) {
@@ -166,11 +173,13 @@ export class PlayerCharacter extends Actor implements CellOccupant {
     }
 
     private addScore(points: number = 1) {
+        const prevScore = this._score;
         this._score += points;
         this.scoreVal.textContent = `${this._score}`;
 
-        this.scoreRoot.classList.remove('hide');
-        this.scoreRoot.classList.add('show');
+        if (this._score >= this.gameScene.targetScore && prevScore < this.gameScene.targetScore) {
+            this.gameScene.events.emit(GameSceneEvents.TargetScoreReached, new TargetScoreReachedEvent(this._score));
+        }
     }
 
     public go(): void {
@@ -190,20 +199,21 @@ export class PlayerCharacter extends Actor implements CellOccupant {
         const camStrategy = new ElasticToActorStrategy(this, 0.1, 0.9);
         const origCamPos = this.scene!.camera.pos;
 
-        let idx = 0;
-        let moveChain = this.actions.moveTo({pos: this.path[idx].pos, duration: moveDuration, easing: EasingFunctions.EaseInQuad}).callMethod(() => this.path[0].occupant?.kill()).callMethod(() => this.addScore(1));
-        for (idx = 1; idx < this.path.length; idx++) {
+        let moveChain = this.actions.delay(1);
+        for (let idx = 0; idx < this.path.length; idx++) {
             const killIdx = idx;
             moveChain = moveChain.delay(delay);
             // todo: move speed frequently puts the player past the target location and then snaps them back, visibly.
             // can we fix it? somehow?
             moveChain = moveChain.moveTo({pos: this.path[idx].pos, duration: moveDuration, easing: EasingFunctions.EaseInQuad});
-            moveChain = moveChain.callMethod(() => this.path[killIdx].occupant?.kill());
+            if (this.path[killIdx].occupant instanceof EnemyCharacter) {
+                moveChain = moveChain.callMethod(() => this.path[killIdx].occupant?.kill());
+            }
             moveChain = moveChain.callMethod(() => this.addScore(1));
             if (killIdx === 9) {
                 moveChain = moveChain.callMethod(() => this.scene!.camera.addStrategy(camStrategy));
             }
-            if (killIdx % 9 === 0) {
+            if (killIdx > 0 && killIdx % 9 === 0) {
                 const adder = killIdx / 900;
                 moveChain = moveChain.callMethod(() => this.scene!.camera.zoomOverTime(1.05 + adder, 500, EasingFunctions.EaseInOutCubic));
             }
@@ -218,6 +228,7 @@ export class PlayerCharacter extends Actor implements CellOccupant {
         }
 
         moveChain = moveChain.callMethod(() => {
+            // todo: if our final cell is the exit, play the exit fanfare and move on.
             this._cell.occupant = undefined;
             this._cell = this.path[this.path.length - 1];
             this._cell.occupant = this;
