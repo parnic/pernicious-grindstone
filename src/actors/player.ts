@@ -102,6 +102,7 @@ export class PlayerCharacter extends Actor implements CellOccupant {
             let lineActor = new Actor({
                 x: source.pos.x,
                 y: source.pos.y,
+                z: 20,
             });
             lineActor.graphics.anchor = Vector.Zero;
             lineActor.graphics.use(new Line({

@@ -26,18 +26,21 @@ import tsxPath from '../res/kenney-pixel-shmup.tsx';
 
 export const Resources = {
   stage01: new TiledResource(stage01Path, {
+    startZIndex: -10,
     pathMap: [
       { path: 'tiles_packed.png', output: spriteSheet },
       { path: 'kenney-pixel-shmup.tsx', output: tsxPath }
     ]
   }),
   stage02: new TiledResource(stage02Path, {
+    startZIndex: -10,
     pathMap: [
       { path: 'tiles_packed.png', output: spriteSheet },
       { path: 'kenney-pixel-shmup.tsx', output: tsxPath }
     ]
   }),
   stage03: new TiledResource(stage02Path, {
+    startZIndex: -10,
     pathMap: [
       { path: 'tiles_packed.png', output: spriteSheet },
       { path: 'kenney-pixel-shmup.tsx', output: tsxPath }
