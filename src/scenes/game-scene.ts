@@ -29,10 +29,24 @@ export class GameScene extends Scene {
     return this._pointerDown;
   }
 
+  private _targetScore: number = 50;
+  public get targetScore(): number {
+    return this._targetScore;
+  }
+
   onInitialize(engine: Engine): void {
     Resources.tiledmap.addToScene(this);
-    const objects = Resources.tiledmap.getObjectLayers('obje');
+    const targetScoreProp = Resources.tiledmap.map.properties?.find(p => p.name === "target-score");
+    if (!targetScoreProp) {
+      Logger.getInstance().warn(`no target-score property found on imported map; will use default value of ${this._targetScore}`);
+    } else if (targetScoreProp.type !== 'int') {
+      Logger.getInstance().warn(`target-score property on map is not of type int; will use default value of ${this._targetScore}`);
+    } else {
+      this._targetScore = targetScoreProp.value;
+    }
+    this.targetScoreVal.textContent = `${this._targetScore}`;
 
+    const objects = Resources.tiledmap.getObjectLayers('obje');
     this.addPlayer(objects[0]);
     this.addEnemies(objects[0]);
     this.addExit(objects[0]);
