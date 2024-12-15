@@ -5,6 +5,7 @@ import { GameScene, GameSceneEvents, TargetScoreReachedEvent } from "../scenes/g
 import { EnemyCharacter, isHoverable } from "./enemy";
 import { rand } from "../utilities/math";
 import { Exit } from "./exit";
+import { html } from "../utilities/html";
 
 export type PlayerCharacterArgs = ActorArgs & {
     cell: Cell;
@@ -16,6 +17,8 @@ export class PlayerCharacter extends Actor implements CellOccupant {
     private scoreRoot: HTMLElement;
     private scoreVal: HTMLElement;
     private goButton: HTMLElement;
+    private targetScoreGroup: HTMLElement;
+    private scoreTextGroup: HTMLElement;
 
     private _score: number = 0;
     public get score() {
@@ -51,6 +54,8 @@ export class PlayerCharacter extends Actor implements CellOccupant {
         this.scoreRoot = document.getElementById('scoreElement')!;
         this.scoreVal = document.getElementById('score')!;
         this.goButton = document.getElementById('btnGo')!;
+        this.targetScoreGroup = document.getElementById('targetScoreGroup')!;
+        this.scoreTextGroup = document.getElementById('scoreText')!;
     }
 
     canHover(pathTail: Cell): boolean {
@@ -69,11 +74,9 @@ export class PlayerCharacter extends Actor implements CellOccupant {
         this.goButton.addEventListener('click', () => {
             this.go();
         });
-        this.goButton.classList.remove('hide');
-        this.goButton.classList.add('show');
+        html.unhideElement(this.goButton);
 
-        this.scoreRoot.classList.remove('hide');
-        this.scoreRoot.classList.add('show');
+        html.unhideElement(this.scoreRoot);
 
         _engine.input.keyboard.on('release', evt => {
             if (evt.key == Keys.Space) {
@@ -156,17 +159,22 @@ export class PlayerCharacter extends Actor implements CellOccupant {
 
     updateScoreUi() {
         if (this.path.length === 0) {
-            this.willScoreRoot.classList.add('hide');
-            this.willScoreRoot.classList.remove('show');
+            html.hideElement(this.willScoreRoot);
             this.goButton.setAttribute("disabled", "true");
         } else {
-            this.willScoreRoot.classList.add('show');
-            this.willScoreRoot.classList.remove('hide');
+            html.showElement(this.willScoreRoot);
             this.goButton.removeAttribute("disabled");
         }
         this.willScoreVal.textContent = `${this.path.length}`;
 
         this.scoreVal.textContent = `${this._score}`;
+        if (this._score >= this.gameScene.targetScore) {
+            html.hideElement(this.targetScoreGroup);
+            this.scoreTextGroup.classList.add('gold-shadow');
+        } else {
+            html.unhideElement(this.targetScoreGroup);
+            this.scoreTextGroup.classList.remove('gold-shadow');
+        }
     }
 
     public get pathTail(): Cell {

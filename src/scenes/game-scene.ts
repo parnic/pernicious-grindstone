@@ -1,12 +1,12 @@
-import { ActorEvents, CollisionType, Color, EasingFunctions, Engine, EventEmitter, GameEvent, Logger, Scene, SceneEvents } from "excalibur";
+import { CollisionType, Color, EasingFunctions, Engine, EventEmitter, GameEvent, Logger, Scene, SceneEvents } from "excalibur";
 import { EnemyCharacter } from "../actors/enemy";
-import { Resources } from "../resource";
 import { rand } from "../utilities/math";
 import { PlayerCharacter } from "../actors/player";
 import { Cell } from "../actors/cell";
 import { InsertedTile, TiledObjectLayer, TiledResource } from "@excaliburjs/plugin-tiled";
 import { Exit } from "../actors/exit";
 import { ObjectLayer } from "@excaliburjs/plugin-tiled/dist/src/resource/object-layer";
+import { html } from "../utilities/html";
 
 type GameSceneEvents = {
   TargetScoreReached: TargetScoreReachedEvent;
@@ -94,8 +94,7 @@ export class GameScene extends Scene {
     }
     this.targetScoreVal.textContent = `${this._targetScore}`;
 
-    this.clearElement.classList.add('hide');
-    this.clearElement.classList.remove('show');
+    html.hideElement(this.clearElement);
 
     const objects = this._map.getObjectLayers('obje');
     this.addPlayer(objects[0]);
@@ -137,8 +136,7 @@ export class GameScene extends Scene {
     });
 
     this.events.on(GameSceneEvents.ExitReached, () => {
-      this.clearElement.classList.add('show');
-      this.clearElement.classList.remove('hide');
+      html.showElement(this.clearElement);
     });
 
     this.events.on(GameSceneEvents.CompleteStage, () => {

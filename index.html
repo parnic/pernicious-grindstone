@@ -10,14 +10,16 @@
   <body>
     <main>
       <canvas id="game"></canvas>
-      <div id="uiRoot" class="excalibur-scale">
+      <div id="uiRoot" class="excalibur-scale m-3">
         <button id="btnGo" class="hide" disabled="true">⚔️ Go!</button>
+      </div>
+      <div id="scoreElement" class="hide excalibur-scale-right m-3 text-align-right">
+        <div id="scoreText">
+          Score: <span id="score">0</span><span id="targetScoreGroup"> / <span id="targetScore">50</span></span>
+        </div>
         <div id="pathElement" class="hide">
           Will score: <span id="pathScore">14</span>
         </div>
-      </div>
-      <div id="scoreElement" class="hide excalibur-scale-right">
-        Score: <span id="score">0</span> / <span id="targetScore">50</span>
       </div>
       <div id="clearElement" class="hide">
         CLEAR!
