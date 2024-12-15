@@ -213,6 +213,8 @@ export class PlayerCharacter extends Actor implements CellOccupant {
         const camStrategy = new ElasticToActorStrategy(this, 0.1, 0.9);
         const origCamPos = this.scene!.camera.pos;
 
+        const killedEnemies = this.path.filter(p => p.occupant instanceof EnemyCharacter).map(p => p.occupant as EnemyCharacter);
+
         let moveChain = this.actions.delay(1);
         for (let idx = 0; idx < this.path.length; idx++) {
             const killIdx = idx;
@@ -262,6 +264,7 @@ export class PlayerCharacter extends Actor implements CellOccupant {
                 this.scene!.camera.zoomOverTime(1, 250, EasingFunctions.EaseInOutCubic);
 
                 this.gameScene.refillEnemies();
+                killedEnemies.forEach(e => e.updateNeighborSelected());
                 this._going = false;
             });
         }

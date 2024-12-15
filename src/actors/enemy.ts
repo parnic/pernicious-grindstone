@@ -116,13 +116,12 @@ export class EnemyCharacter extends Actor implements Hoverable, CellOccupant {
     }
     private set selected(newSelected: boolean) {
         this._selected = newSelected;
-        if (this.selected) {
-            this.faceActor.graphics.use(this.sprites.dead!);
-        } else if (this.hovered) {
-            this.faceActor.graphics.use(this.sprites.surprised!);
-        } else {
-            this.faceActor.graphics.use(this.sprites.regular!);
-        }
+        this.updateFaceSprite();
+    }
+
+    private _neighborSelected: boolean = false;
+    public get neighborSelected(): boolean {
+        return this._neighborSelected;
     }
 
     private _hovered: boolean = false;
@@ -137,14 +136,10 @@ export class EnemyCharacter extends Actor implements Hoverable, CellOccupant {
         this._hovered = newHovered;
 
         if (this.hovered) {
-            if (!this.selected) {
-                this.faceActor.graphics.use(this.sprites.surprised!);
-            }
+            this.updateFaceSprite();
             this.faceActor.pos = vec(0, 0);
         } else {
-            if (!this.selected) {
-                this.faceActor.graphics.use(this.sprites.regular!);
-            }
+            this.updateFaceSprite();
         }
     }
 
@@ -272,6 +267,16 @@ export class EnemyCharacter extends Actor implements Hoverable, CellOccupant {
         this.faceActor.graphics.use(this.sprites.regular);
     }
 
+    private updateFaceSprite() {
+        if (this.selected) {
+            this.faceActor.graphics.use(this.sprites.dead!);
+        } else if (this.hovered || this.neighborSelected) {
+            this.faceActor.graphics.use(this.sprites.surprised!);
+        } else {
+            this.faceActor.graphics.use(this.sprites.regular!);
+        }
+    }
+
     public onPostUpdate(_engine: Engine, _delta: number): void {
         if (this.isKilled()) {
             return;
@@ -299,13 +304,13 @@ export class EnemyCharacter extends Actor implements Hoverable, CellOccupant {
             this.animFrame = (this.animFrame + 1) % 2;
 
             if (this.animFrame === 0 || !rand.bool()) {
-                if (this.hovered) {
+                if (this.hovered || this.neighborSelected) {
                     this.faceActor.graphics.use(this.sprites.surprised!);
                 }
 
                 this.faceActor.pos = vec(0, 0);
             } else {
-                if (this.hovered) {
+                if (this.hovered || this.neighborSelected) {
                     this.faceActor.graphics.use(this.sprites.surprised2!);
                 } else {
                     this.faceActor.pos = vec(rand.integer(-1, 1), rand.integer(-1, 1));
@@ -324,6 +329,36 @@ export class EnemyCharacter extends Actor implements Hoverable, CellOccupant {
 
     public pointerdown() {
         this.selected = !this.selected;
+
+        this.updateNeighborSelected();
+    }
+
+    public updateNeighborSelected() {
+        for (const c of this.cell.getNeighbors()) {
+            let e = c.occupant as EnemyCharacter;
+            if (!(e instanceof EnemyCharacter)) {
+                continue;
+            }
+
+            e.notifyNeighborSelected();
+        }
+    }
+
+    protected notifyNeighborSelected() {
+        var neighbors = this.cell.getNeighbors();
+        let numSelected = 0;
+        for (const e of neighbors.map(c => c.occupant as EnemyCharacter)) {
+            if (!(e instanceof EnemyCharacter) || e.isKilled()) {
+                continue;
+            }
+
+            if (e.selected) {
+                numSelected++;
+            }
+        }
+
+        this._neighborSelected = numSelected > 0;
+        this.updateFaceSprite();
     }
 
     onPreKill(_scene: Scene): void {
