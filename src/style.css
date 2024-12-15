@@ -36,7 +36,7 @@ body {
 }
 
 .excalibur-scale-right {
-  transform-origin: right;
+  transform-origin: 100% 0;
   transform: scale(var(--pixel-conversion), var(--pixel-conversion));
 }
 
