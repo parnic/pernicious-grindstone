@@ -1,4 +1,4 @@
-import { CollisionType, Color, EasingFunctions, Engine, Scene } from "excalibur";
+import { CollisionType, Color, EasingFunctions, Engine, Logger, Scene } from "excalibur";
 import { EnemyCharacter } from "../actors/enemy";
 import { Resources } from "../resource";
 import { rand } from "../utilities/math";
@@ -44,7 +44,7 @@ export class GameScene extends Scene {
     } else {
       this._targetScore = targetScoreProp.value;
     }
-    this.targetScoreVal.textContent = `${this._targetScore}`;
+    // this.targetScoreVal.textContent = `${this._targetScore}`;
 
     const objects = Resources.tiledmap.getObjectLayers('obje');
     this.addPlayer(objects[0]);
