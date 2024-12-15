@@ -10,6 +10,8 @@ import { ObjectLayer } from "@excaliburjs/plugin-tiled/dist/src/resource/object-
 
 type GameSceneEvents = {
   TargetScoreReached: TargetScoreReachedEvent;
+  ExitReached: ExitReachedEvent;
+  CompleteStage: CompleteStageEvent;
 }
 
 export class TargetScoreReachedEvent extends GameEvent<number> {
@@ -18,14 +20,32 @@ export class TargetScoreReachedEvent extends GameEvent<number> {
   }
 }
 
+export class ExitReachedEvent extends GameEvent<void> {
+  constructor() {
+    super();
+  }
+}
+
+export class CompleteStageEvent extends GameEvent<void> {
+  constructor() {
+    super();
+  }
+}
+
 export const GameSceneEvents = {
-  TargetScoreReached: 'targetscorereached'
+  TargetScoreReached: 'targetscorereached',
+  ExitReached: 'exitreached',
+  CompleteStage: 'completestage',
 } as const;
 
 export class GameScene extends Scene {
   public events = new EventEmitter<SceneEvents & GameSceneEvents>();
 
   private targetScoreVal: HTMLElement;
+  private clearElement: HTMLElement;
+
+  private _map: TiledResource;
+  private _nextScene: string;
 
   private _cells: Cell[] = [];
   public get cells() {
@@ -52,25 +72,32 @@ export class GameScene extends Scene {
     return this._targetScore;
   }
 
-  constructor() {
+  constructor(map: TiledResource, nextScene: string) {
     super();
 
     this.targetScoreVal = document.getElementById('targetScore')!;
+    this.clearElement = document.getElementById('clearElement')!;
+
+    this._map = map;
+    this._nextScene = nextScene;
   }
 
   onInitialize(engine: Engine): void {
-    Resources.tiledmap.addToScene(this);
-    const targetScoreProp = Resources.tiledmap.map.properties?.find(p => p.name === "target-score");
+    this._map.addToScene(this);
+    const targetScoreProp = this._map.map.properties?.find(p => p.name === "target-score");
     if (!targetScoreProp) {
       Logger.getInstance().warn(`no target-score property found on imported map; will use default value of ${this._targetScore}`);
     } else if (targetScoreProp.type !== 'int') {
       Logger.getInstance().warn(`target-score property on map is not of type int; will use default value of ${this._targetScore}`);
     } else {
-      this._targetScore = targetScoreProp.value;
+      this._targetScore = 10;//targetScoreProp.value;
     }
     this.targetScoreVal.textContent = `${this._targetScore}`;
 
-    const objects = Resources.tiledmap.getObjectLayers('obje');
+    this.clearElement.classList.add('hide');
+    this.clearElement.classList.remove('show');
+
+    const objects = this._map.getObjectLayers('obje');
     this.addPlayer(objects[0]);
     this.addEnemies(objects[0]);
     this.addExit(objects[0]);
@@ -101,6 +128,15 @@ export class GameScene extends Scene {
           c.pointerdown();
         }
       }
+    });
+
+    this.events.on(GameSceneEvents.ExitReached, () => {
+      this.clearElement.classList.add('show');
+      this.clearElement.classList.remove('hide');
+    });
+
+    this.events.on(GameSceneEvents.CompleteStage, () => {
+      this.engine.goToScene(this._nextScene);
     });
   }
 

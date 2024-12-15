@@ -18,12 +18,26 @@ import imageEnemyFaceDead from '../img/kenney-shape-characters/face_j.png'
 import imageEnemyFaceSurprisedBlinking from '../img/kenney-shape-characters/face_k.png'
 import imageEnemyFaceHopefulBlinking from '../img/kenney-shape-characters/face_l.png'
 
-import tmxPath from '../res/stage-01.tmx';
+import stage01Path from '../res/stage-01.tmx';
+import stage02Path from '../res/stage-02.tmx';
+import stage03Path from '../res/stage-03.tmx';
 import spriteSheet from '../img/kenney-pixel-shmup/tiles_packed.png';
 import tsxPath from '../res/kenney-pixel-shmup.tsx';
 
 export const Resources = {
-  tiledmap: new TiledResource(tmxPath, {
+  stage01: new TiledResource(stage01Path, {
+    pathMap: [
+      { path: 'tiles_packed.png', output: spriteSheet },
+      { path: 'kenney-pixel-shmup.tsx', output: tsxPath }
+    ]
+  }),
+  stage02: new TiledResource(stage02Path, {
+    pathMap: [
+      { path: 'tiles_packed.png', output: spriteSheet },
+      { path: 'kenney-pixel-shmup.tsx', output: tsxPath }
+    ]
+  }),
+  stage03: new TiledResource(stage02Path, {
     pathMap: [
       { path: 'tiles_packed.png', output: spriteSheet },
       { path: 'kenney-pixel-shmup.tsx', output: tsxPath }

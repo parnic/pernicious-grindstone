@@ -18,7 +18,9 @@ const engine = new Engine({
 
 calculateExPixelConversion(engine.screen);
 
-engine.add("game-scene", new GameScene());
+engine.add("scene01", new GameScene(Resources.stage01, 'scene02'));
+engine.add("scene02", new GameScene(Resources.stage02, 'scene03'));
+engine.add("scene03", new GameScene(Resources.stage03, ''));
 
 const loader = new Loader();
 for (const resource of Object.values(Resources)) {
@@ -35,5 +37,5 @@ loader.suppressPlayButton = true;
 
 engine.screen.events.on('resize', () => calculateExPixelConversion(engine.screen));
 engine.start(loader).then(() => {
-  engine.goToScene("game-scene");
+  engine.goToScene("scene01");
 });

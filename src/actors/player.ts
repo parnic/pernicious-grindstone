@@ -4,6 +4,7 @@ import { Cell, CellOccupant } from "./cell";
 import { GameScene, GameSceneEvents, TargetScoreReachedEvent } from "../scenes/game-scene";
 import { EnemyCharacter, isHoverable } from "./enemy";
 import { rand } from "../utilities/math";
+import { Exit } from "./exit";
 
 export type PlayerCharacterArgs = ActorArgs & {
     cell: Cell;
@@ -79,6 +80,8 @@ export class PlayerCharacter extends Actor implements CellOccupant {
                 this.go();
             }
         });
+
+        this.updateScoreUi();
     }
 
     public onPostUpdate(_engine: Engine, _delta: number): void {
@@ -162,6 +165,8 @@ export class PlayerCharacter extends Actor implements CellOccupant {
             this.goButton.removeAttribute("disabled");
         }
         this.willScoreVal.textContent = `${this.path.length}`;
+
+        this.scoreVal.textContent = `${this._score}`;
     }
 
     public get pathTail(): Cell {
@@ -175,7 +180,7 @@ export class PlayerCharacter extends Actor implements CellOccupant {
     private addScore(points: number = 1) {
         const prevScore = this._score;
         this._score += points;
-        this.scoreVal.textContent = `${this._score}`;
+        this.updateScoreUi();
 
         if (this._score >= this.gameScene.targetScore && prevScore < this.gameScene.targetScore) {
             this.gameScene.events.emit(GameSceneEvents.TargetScoreReached, new TargetScoreReachedEvent(this._score));
@@ -227,22 +232,29 @@ export class PlayerCharacter extends Actor implements CellOccupant {
             moveDuration = Math.max(moveDurationMin, moveDuration * 0.85);
         }
 
-        moveChain = moveChain.callMethod(() => {
-            // todo: if our final cell is the exit, play the exit fanfare and move on.
-            this._cell.occupant = undefined;
-            this._cell = this.path[this.path.length - 1];
-            this._cell.occupant = this;
-            this.path.length = 0;
-            this.updateScoreUi();
-        }).delay(
-            1000
-        ).callMethod(() => {
-            this.scene!.camera.removeStrategy(camStrategy);
-            this.scene!.camera.move(origCamPos, 250, EasingFunctions.EaseInOutCubic);
-            this.scene!.camera.zoomOverTime(1, 250, EasingFunctions.EaseInOutCubic);
+        if (this.pathTail.occupant instanceof Exit) {
+            this.actions
+                .callMethod(() => this.gameScene.events.emit(GameSceneEvents.ExitReached))
+                .delay(3000)
+                .callMethod(() => this.gameScene.events.emit(GameSceneEvents.CompleteStage));
+        } else {
+            moveChain = moveChain.callMethod(() => {
+                // todo: if our final cell is the exit, play the exit fanfare and move on.
+                this._cell.occupant = undefined;
+                this._cell = this.path[this.path.length - 1];
+                this._cell.occupant = this;
+                this.path.length = 0;
+                this.updateScoreUi();
+            }).delay(
+                1000
+            ).callMethod(() => {
+                this.scene!.camera.removeStrategy(camStrategy);
+                this.scene!.camera.move(origCamPos, 250, EasingFunctions.EaseInOutCubic);
+                this.scene!.camera.zoomOverTime(1, 250, EasingFunctions.EaseInOutCubic);
 
-            this.gameScene.refillEnemies();
-            this._going = false;
-        });
+                this.gameScene.refillEnemies();
+                this._going = false;
+            });
+        }
     }
 }

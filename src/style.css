@@ -13,6 +13,10 @@ canvas {
   src: url('fonts/Silkscreen-Regular.ttf') format('truetype');
 }
 
+html, body, main {
+  height: 100%;
+}
+
 body {
   font-family: 'Silkscreen';
   color: #333;
@@ -28,6 +32,16 @@ body {
 
 .excalibur-scale {
   transform-origin: 0 0;
+  transform: scale(var(--pixel-conversion), var(--pixel-conversion));
+}
+
+.excalibur-scale-right {
+  transform-origin: right;
+  transform: scale(var(--pixel-conversion), var(--pixel-conversion));
+}
+
+.excalibur-scale-center {
+  transform-origin: center;
   transform: scale(var(--pixel-conversion), var(--pixel-conversion));
 }
 
@@ -74,5 +88,15 @@ body {
   position: absolute;
   right: 0;
   top: 0;
-  font-size: 3rem;
+}
+
+#clearElement {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+
+  font-size: 5rem;
+
+  text-shadow: -2px -2px 0.5rem #fff, 2px -2px 0.5rem #fff, -2px 2px 0.5rem #fff, 2px 2px 0.5rem #fff
 }
