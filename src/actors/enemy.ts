@@ -5,6 +5,7 @@ import { Cell, CellOccupant } from "./cell";
 import { GameScene } from "../scenes/game-scene";
 import { PlayerCharacter } from "./player";
 import { Exit } from "./exit";
+import { getOutlineMaterial } from "../materials/outline";
 
 export type EnemyCharacterArgs = ActorArgs & {
     enemyType: number;
@@ -157,6 +158,7 @@ export class EnemyCharacter extends Actor implements Hoverable, CellOccupant {
 
         if (inEnraged) {
             this._neighborSelected = false;
+            this.bodyActor.graphics.material = getOutlineMaterial(this.scene!.engine);
         }
 
         this._enraged = inEnraged;
@@ -193,6 +195,7 @@ export class EnemyCharacter extends Actor implements Hoverable, CellOccupant {
         this.faceActor = new Actor({
             x: 0,
             y: 0,
+            z: 15,
             width: 9,
             height: 6,
             collisionType: CollisionType.PreventCollision,
