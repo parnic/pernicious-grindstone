@@ -304,7 +304,7 @@ export class GameScene extends Scene {
       height: c.height,
       collisionType: CollisionType.PreventCollision,
       color: Color.Transparent,
-      enemyType: 0,//rand.integer(0, 2),
+      enemyType: rand.integer(0, 2),
       cell: c,
     });
 
