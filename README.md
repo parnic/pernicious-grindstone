@@ -4,15 +4,21 @@
 
 Visit <https://parnic.github.io/pernicious-grindstone/> to play!
 
+To play locally:
+
+1. Run `npm install`
+2. Run `npm run dev`
+3. Open the URL printed to the terminal in a web browser.
+
 ## How to play
 
-Your goal is to get the highest score by making long chains. Selecting an enemy will lock your chain into that color, and you may then jump to any of that enemy's neighbors, including diagonals.
+Your goal is to get the highest score by making long chains. Selecting an enemy will lock your chain into that color, and you may then jump to any of that enemy's neighbors, including diagonals. Avoiding ending your chain next to a glowing angry enemy as they will deal damage to you. Take 3 hits and you lose!
 
-Press the Go button to lock in your chain and destroy the selected enemies.
+Press the Go button to lock in your chain and destroy the selected enemies. Once you have reached the target score shown on the UI, the exit door will open. Make your way to the exit in order to escape!
 
 ## Development
 
-You must have the Chrome browser installed.
+You must have the Chrome browser installed to have debug functionality.
 
 1. Run `npm install`
 2. Run `npm run dev` to start the webserver.
