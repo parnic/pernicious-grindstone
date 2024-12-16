@@ -278,12 +278,12 @@ export class PlayerCharacter extends Actor implements CellOccupant {
 
         this._going = true;
 
-        const moveDurationMax = 200;
-        const moveDurationMin = 30;
-        const delayMin = 15;
+        const moveDurationMax = 350;
+        const moveDurationMin = 60;
+        const delayMin = 50;
 
         let moveDuration = moveDurationMax;
-        let delay = 100;
+        let delay = 150;
 
         const camStrategy = new ElasticToActorStrategy(this, 0.1, 0.9);
         const origCamPos = this.scene!.camera.pos;
@@ -294,9 +294,7 @@ export class PlayerCharacter extends Actor implements CellOccupant {
         for (let idx = 0; idx < this.path.length; idx++) {
             const killIdx = idx;
             moveChain = moveChain.delay(delay);
-            // todo: move speed frequently puts the player past the target location and then snaps them back, visibly.
-            // can we fix it? somehow?
-            moveChain = moveChain.moveTo({ pos: this.path[idx].pos, duration: moveDuration, easing: EasingFunctions.EaseInQuad });
+            moveChain = moveChain.moveTo({ pos: this.path[idx].pos, duration: moveDuration, easing: EasingFunctions.EaseInCubic });
             if (this.path[killIdx].occupant instanceof EnemyCharacter) {
                 moveChain = moveChain.callMethod(() => this.path[killIdx].occupant?.kill());
             }
@@ -309,7 +307,7 @@ export class PlayerCharacter extends Actor implements CellOccupant {
                 moveChain = moveChain.callMethod(() => this.scene!.camera.zoomOverTime(1.05 + adder, 500, EasingFunctions.EaseInOutCubic));
             }
 
-            const shakeScaler = Math.trunc(idx / 5);
+            const shakeScaler = Math.trunc(idx / 3);
             const shakeXMin = Math.max(1, Math.min(3, shakeScaler));
             const shakeXMax = Math.max(1, Math.min(5, shakeScaler + 2));
             moveChain = moveChain.callMethod(() => this.scene!.camera.shake(rand.integer(shakeXMin, shakeXMax), rand.integer(0, 2), delay));
