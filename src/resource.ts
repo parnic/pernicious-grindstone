@@ -41,7 +41,7 @@ export const Resources = {
       { path: 'kenney-pixel-shmup.tsx', output: tsxPath }
     ]
   }),
-  stage03: new TiledResource(stage02Path, {
+  stage03: new TiledResource(stage03Path, {
     startZIndex: -10,
     pathMap: [
       { path: 'tiles_packed.png', output: spriteSheet },
