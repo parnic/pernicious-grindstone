@@ -24,6 +24,10 @@ body {
   background-color: #dff6f5;
 }
 
+.d-inline-block {
+  display: inline-block;
+}
+
 #game {
   position: absolute;
   left: 50%;
