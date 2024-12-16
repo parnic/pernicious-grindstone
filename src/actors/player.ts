@@ -53,6 +53,15 @@ export class PlayerCharacter extends Actor implements CellOccupant {
     }
 
     private _going: boolean = false;
+    public get going() {
+        return this._going;
+    }
+    public set going(inGoing: boolean) {
+        this._going = inGoing;
+        if (this.going) {
+            this.gameScene.cells.forEach(c => c.hovered = false);
+        }
+    }
 
     private _cell: Cell;
     public get cell() {
@@ -277,11 +286,11 @@ export class PlayerCharacter extends Actor implements CellOccupant {
     }
 
     public go(): void {
-        if (this._going || this.path.length === 0) {
+        if (this.going || this.path.length === 0) {
             return;
         }
 
-        this._going = true;
+        this.going = true;
 
         const moveDurationMax = 350;
         const moveDurationMin = 60;
@@ -364,7 +373,7 @@ export class PlayerCharacter extends Actor implements CellOccupant {
     
                     this.gameScene.refillEnemies();
                     killedEnemies.forEach(e => e.updateNeighborSelected());
-                    this._going = false;
+                    this.going = false;
                 }).delay(
                     this.gameScene.enemyRefillDurationMs
                 ).callMethod(() => {

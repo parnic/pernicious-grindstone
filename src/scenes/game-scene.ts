@@ -138,7 +138,7 @@ export class GameScene extends Scene {
       this._pointerDown = false;
     });
     engine.input.pointers.primary.on('move', evt => {
-      if (!this.player || this.player.isDead) {
+      if (!this.player || this.player.isDead || this.player.going) {
         return;
       }
 
