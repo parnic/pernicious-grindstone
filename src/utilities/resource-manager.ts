@@ -31,7 +31,7 @@ export class ResourceManager {
   static getPlayerSprite() {
     this._populateSpriteSheet();
 
-    const sprite = _spriteSheet!.getSprite(3, 0)!;//5, 1)!;
+    const sprite = _spriteSheet!.getSprite(2, 0)!;
     sprite.width = 16;
     sprite.height = 16;
     // sprite.rotation = Math.PI;
@@ -41,7 +41,7 @@ export class ResourceManager {
   static getClosedExitSprite() {
     this._populateSpriteSheet();
 
-    const sprite = _spriteSheet!.getSprite(10, 0)!;
+    const sprite = _spriteSheet!.getSprite(6, 2)!;
     sprite.width = 16;
     sprite.height = 16;
     return sprite;
@@ -50,7 +50,7 @@ export class ResourceManager {
   static getOpenExitSprite() {
     this._populateSpriteSheet();
 
-    const sprite = _spriteSheet!.getSprite(7, 1)!;
+    const sprite = _spriteSheet!.getSprite(6, 1)!;
     sprite.width = 16;
     sprite.height = 16;
     return sprite;
