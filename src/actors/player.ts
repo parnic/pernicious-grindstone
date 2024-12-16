@@ -124,6 +124,7 @@ export class PlayerCharacter extends Actor implements CellOccupant {
 
     public onInitialize(_engine: Engine): void {
         const body = new Actor({
+            name: `player-body`,
             width: this.width - 2,
             height: this.height - 2,
             collisionType: CollisionType.PreventCollision,
@@ -162,6 +163,7 @@ export class PlayerCharacter extends Actor implements CellOccupant {
             }
 
             let lineActor = new Actor({
+                name: `player-pathlinesegment-${i + 1}`,
                 x: source.pos.x,
                 y: source.pos.y,
                 z: 20,

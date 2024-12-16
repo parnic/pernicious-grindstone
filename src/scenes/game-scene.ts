@@ -90,6 +90,8 @@ export class GameScene extends Scene {
   private _enragedChanceMax: number = 0;
   private _turn: number = 1;
 
+  private _enemyCounter: number = 0;
+
   constructor(map: TiledResource) {
     super();
 
@@ -181,6 +183,7 @@ export class GameScene extends Scene {
     let cell = this.addCell(playerStart.x, playerStart.y, playerStart.width, playerStart.height);
 
     this._player = new PlayerCharacter({
+      name: `player`,
       x: playerStart.x + (playerStart.width / 2),
       y: playerStart.y + (playerStart.width / 2),
       width: playerStart.width,
@@ -267,6 +270,7 @@ export class GameScene extends Scene {
     let cell = this.addCell(exitTile.x, exitTile.y, exitTile.width, exitTile.height);
 
     this._exit = new Exit({
+      name: `exit`,
       x: exitTile.x + (exitTile.width / 2),
       y: exitTile.y + (exitTile.height / 2),
       width: exitTile.width,
@@ -278,6 +282,7 @@ export class GameScene extends Scene {
 
   addCell(x: number, y: number, width: number, height: number): Cell {
     let cell = new Cell({
+      name: `cell-${x}-${y}`,
       x: x + (width / 2),
       y: y + (height / 2),
       width: width,
@@ -297,7 +302,10 @@ export class GameScene extends Scene {
   }
 
   private spawnEnemy(c: Cell) {
+    this._enemyCounter++;
+
     const enemy = new EnemyCharacter({
+      name: `enemy-${this._enemyCounter}`,
       x: c.pos.x,
       y: -c.height,
       width: c.width,

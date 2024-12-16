@@ -47,6 +47,7 @@ export class Exit extends Actor implements Hoverable, CellOccupant {
         this._cell.occupant = this;
 
         this._body = new Actor({
+            name: 'exit-body',
             width: this.width - 2,
             height: this.height - 2,
             collisionType: CollisionType.PreventCollision,

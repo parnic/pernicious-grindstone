@@ -32,7 +32,7 @@ export function isHoverable(object: any): object is Hoverable {
     return object && (object as Hoverable).hovered !== undefined;
 }
 
-export function spawnDieEffect(pos: Vector, scene: Scene): void {
+export function spawnDieEffect(actor: Actor, scene: Scene): void {
     // var emitter = new GpuParticleEmitter({
     //     pos: pos,
     //     emitRate: 100,
@@ -72,8 +72,9 @@ export function spawnDieEffect(pos: Vector, scene: Scene): void {
         const vel = rand.floating(0, Math.PI);
         const color = new Color(rand.integer(100, 240), rand.integer(100, 240), rand.integer(100, 240), 1);//rand.floating(0.8, 0.95));
         const act = new Actor({
-            x: pos.x,
-            y: pos.y,
+            name: `actor-${actor.name}-deathfrag-${i + 1}`,
+            x: actor.pos.x,
+            y: actor.pos.y,
             width: x,
             height: y,
             rotation: rot,
@@ -184,6 +185,7 @@ export class EnemyCharacter extends Actor implements Hoverable, CellOccupant {
         this._cell.occupant = this;
 
         this.bodyActor = new Actor({
+            name: `enemy-${this.name}-body`,
             x: 0,
             y: 0,
             width: this.width - 2,
@@ -193,6 +195,7 @@ export class EnemyCharacter extends Actor implements Hoverable, CellOccupant {
         this.addChild(this.bodyActor);
 
         this.faceActor = new Actor({
+            name: `enemy-${this.name}-face`,
             x: 0,
             y: 0,
             z: 15,
@@ -401,7 +404,7 @@ export class EnemyCharacter extends Actor implements Hoverable, CellOccupant {
     }
 
     onPreKill(_scene: Scene): void {
-        spawnDieEffect(this.pos, _scene);
+        spawnDieEffect(this, _scene);
     }
 
     onPostKill(_scene: Scene): void {
