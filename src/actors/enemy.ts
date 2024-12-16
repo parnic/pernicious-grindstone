@@ -1,4 +1,4 @@
-import { ActionSequence, Actor, ActorArgs, Color, EmitterType, Engine, GpuParticleEmitter, Line, ParallelActions, ParticleTransform, Scene, Sprite, vec, Vector } from "excalibur";
+import { ActionSequence, Actor, ActorArgs, CollisionType, Color, EmitterType, Engine, GpuParticleEmitter, Line, ParallelActions, ParticleTransform, Scene, Sprite, vec, Vector } from "excalibur";
 import { ImageResources } from "../resource";
 import { rand } from "../utilities/math";
 import { Cell, CellOccupant } from "./cell";
@@ -78,6 +78,7 @@ export function spawnDieEffect(pos: Vector, scene: Scene): void {
             rotation: rot,
             angularVelocity: vel,
             color: color,
+            collisionType: CollisionType.PreventCollision,
         })
 
         const move = new ActionSequence(act, ctx => {
@@ -185,6 +186,7 @@ export class EnemyCharacter extends Actor implements Hoverable, CellOccupant {
             y: 0,
             width: this.width - 2,
             height: this.height - 2,
+            collisionType: CollisionType.PreventCollision,
         });
         this.addChild(this.bodyActor);
 
@@ -193,6 +195,7 @@ export class EnemyCharacter extends Actor implements Hoverable, CellOccupant {
             y: 0,
             width: 9,
             height: 6,
+            collisionType: CollisionType.PreventCollision,
         });
         this.addChild(this.faceActor);
 
@@ -205,6 +208,7 @@ export class EnemyCharacter extends Actor implements Hoverable, CellOccupant {
         const top = new Actor({
             width: this.width,
             height: this.height,
+            collisionType: CollisionType.PreventCollision,
         });
         top.graphics.use(
             new Line({
@@ -218,6 +222,7 @@ export class EnemyCharacter extends Actor implements Hoverable, CellOccupant {
         const bottom = new Actor({
             width: this.width,
             height: this.height,
+            collisionType: CollisionType.PreventCollision,
         });
         bottom.graphics.use(
             new Line({
@@ -231,6 +236,7 @@ export class EnemyCharacter extends Actor implements Hoverable, CellOccupant {
         const left = new Actor({
             width: this.width,
             height: this.height,
+            collisionType: CollisionType.PreventCollision,
         });
         left.graphics.use(
             new Line({
@@ -244,6 +250,7 @@ export class EnemyCharacter extends Actor implements Hoverable, CellOccupant {
         const right = new Actor({
             width: this.width,
             height: this.height,
+            collisionType: CollisionType.PreventCollision,
         });
         right.graphics.use(
             new Line({

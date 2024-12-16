@@ -283,6 +283,7 @@ export class GameScene extends Scene {
       width: width,
       height: height,
       color: Color.Transparent,
+      collisionType: CollisionType.PreventCollision,
     });
 
     cell.on('pointerdown', () => {
@@ -303,7 +304,7 @@ export class GameScene extends Scene {
       height: c.height,
       collisionType: CollisionType.PreventCollision,
       color: Color.Transparent,
-      enemyType: rand.integer(0, 2),
+      enemyType: 0,//rand.integer(0, 2),
       cell: c,
     });
 

@@ -1,4 +1,4 @@
-import { Actor, ActorArgs, ActorEvents, Color, EasingFunctions, ElasticToActorStrategy, Engine, EventEmitter, GameEvent, Keys, Line, Logger, Vector } from "excalibur";
+import { Actor, ActorArgs, ActorEvents, CollisionType, Color, EasingFunctions, ElasticToActorStrategy, Engine, EventEmitter, GameEvent, Keys, Line, Logger, Vector } from "excalibur";
 import { ResourceManager } from "../utilities/resource-manager";
 import { Cell, CellOccupant } from "./cell";
 import { GameScene, GameSceneEvents, TargetScoreReachedEvent } from "../scenes/game-scene";
@@ -126,6 +126,7 @@ export class PlayerCharacter extends Actor implements CellOccupant {
         const body = new Actor({
             width: this.width - 2,
             height: this.height - 2,
+            collisionType: CollisionType.PreventCollision,
         });
         body.graphics.use(ResourceManager.getPlayerSprite());
 
@@ -164,6 +165,7 @@ export class PlayerCharacter extends Actor implements CellOccupant {
                 x: source.pos.x,
                 y: source.pos.y,
                 z: 20,
+                collisionType: CollisionType.PreventCollision,
             });
             lineActor.graphics.anchor = Vector.Zero;
             lineActor.graphics.use(new Line({

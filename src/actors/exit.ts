@@ -1,4 +1,4 @@
-import { Actor, ActorArgs, Engine, Sprite } from "excalibur";
+import { Actor, ActorArgs, CollisionType, Engine, Sprite } from "excalibur";
 import { GameScene, GameSceneEvents } from "../scenes/game-scene";
 import { Cell, CellOccupant } from "./cell";
 import { Hoverable } from "./enemy";
@@ -49,6 +49,7 @@ export class Exit extends Actor implements Hoverable, CellOccupant {
         this._body = new Actor({
             width: this.width - 2,
             height: this.height - 2,
+            collisionType: CollisionType.PreventCollision,
         });
         this.addChild(this._body);
     }

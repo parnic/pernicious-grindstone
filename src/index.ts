@@ -14,6 +14,7 @@ const engine = new Engine({
   antialiasing: false,
   suppressHiDPIScaling: false,
   snapToPixel: true,
+  physics: false,
 });
 
 calculateExPixelConversion(engine.screen);
