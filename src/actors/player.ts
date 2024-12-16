@@ -103,6 +103,8 @@ export class PlayerCharacter extends Actor implements CellOccupant {
     constructor(config?: PlayerCharacterArgs) {
         super(config);
 
+        this.z = 20;
+
         this._cell = config?.cell!;
         this._cell.occupant = this;
 
@@ -125,6 +127,7 @@ export class PlayerCharacter extends Actor implements CellOccupant {
     public onInitialize(_engine: Engine): void {
         const body = new Actor({
             name: `player-body`,
+            z: this.z,
             width: this.width - 2,
             height: this.height - 2,
             collisionType: CollisionType.PreventCollision,
@@ -166,7 +169,7 @@ export class PlayerCharacter extends Actor implements CellOccupant {
                 name: `player-pathlinesegment-${i + 1}`,
                 x: source.pos.x,
                 y: source.pos.y,
-                z: 20,
+                z: 25,
                 collisionType: CollisionType.PreventCollision,
             });
             lineActor.graphics.anchor = Vector.Zero;

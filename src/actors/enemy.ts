@@ -178,7 +178,7 @@ export class EnemyCharacter extends Actor implements Hoverable, CellOccupant {
     constructor(config?: EnemyCharacterArgs) {
         super(config);
 
-        this.transform.z = 10;
+        this.z = 10;
 
         this.enemyType = config?.enemyType ?? 0;
         this._cell = config?.cell!;
