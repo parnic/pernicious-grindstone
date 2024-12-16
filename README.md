@@ -10,7 +10,7 @@ To play locally:
 2. Run `npm run dev`
 3. Open the URL printed to the terminal in a web browser.
 
-## How to play
+## Objective
 
 Your goal is to get the highest score by making long chains. Selecting an enemy will lock your chain into that color, and you may then jump to any of that enemy's neighbors, including diagonals. Avoiding ending your chain next to a glowing angry enemy as they will deal damage to you. Take 3 hits and you lose!
 
@@ -23,3 +23,9 @@ You must have the Chrome browser installed to have debug functionality.
 1. Run `npm install`
 2. Run `npm run dev` to start the webserver.
 3. Launch the debugging configuration from VSCode to open Chrome to the appropriate URL if you want to be able to debug in VSCode (set breakpoints, etc.), or open the URL given from the last step to use any browser without debugging.
+
+## Credits
+
+* Author: [Parnic](https://github.com/parnic)
+* Engine: [Excalibur.js](https://excaliburjs.com)
+* Art: [Kenney.nl](https://kenney.nl) and Parnic's lovely wife
