@@ -1,7 +1,7 @@
 import { Color, DisplayMode, Engine, Loader } from "excalibur";
 import { ImageResources, Resources } from "./resource";
-import { GameScene } from "./scenes/game-scene";
 import { calculateExPixelConversion } from "./ui";
+import { SceneManager } from "./scene-manager";
 
 const engine = new Engine({
   canvasElementId: 'game',
@@ -18,10 +18,6 @@ const engine = new Engine({
 
 calculateExPixelConversion(engine.screen);
 
-engine.add("scene01", new GameScene(Resources.stage01, 'scene02'));
-engine.add("scene02", new GameScene(Resources.stage02, 'scene03'));
-engine.add("scene03", new GameScene(Resources.stage03, ''));
-
 const loader = new Loader();
 for (const resource of Object.values(Resources)) {
   loader.addResource(resource);
@@ -37,5 +33,6 @@ loader.suppressPlayButton = true;
 
 engine.screen.events.on('resize', () => calculateExPixelConversion(engine.screen));
 engine.start(loader).then(() => {
-  engine.goToScene("scene01");
+  const firstScene = SceneManager.getFirstSceneData();
+  SceneManager.goToScene(firstScene, engine);
 });

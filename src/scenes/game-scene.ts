@@ -1,12 +1,13 @@
 import { CollisionType, Color, EasingFunctions, Engine, EventEmitter, GameEvent, Logger, Scene, SceneEvents } from "excalibur";
 import { EnemyCharacter } from "../actors/enemy";
 import { rand } from "../utilities/math";
-import { PlayerCharacter } from "../actors/player";
+import { PlayerCharacter, PlayerEvents, TurnEndedEvent } from "../actors/player";
 import { Cell } from "../actors/cell";
-import { InsertedTile, TiledObjectLayer, TiledResource } from "@excaliburjs/plugin-tiled";
+import { InsertedTile, TiledResource } from "@excaliburjs/plugin-tiled";
 import { Exit } from "../actors/exit";
 import { ObjectLayer } from "@excaliburjs/plugin-tiled/dist/src/resource/object-layer";
 import { html } from "../utilities/html";
+import { SceneManager } from "../scene-manager";
 
 type GameSceneEvents = {
   TargetScoreReached: TargetScoreReachedEvent;
@@ -43,9 +44,15 @@ export class GameScene extends Scene {
 
   private targetScoreVal: HTMLElement;
   private clearElement: HTMLElement;
+  private healthDepletedElement: HTMLElement;
+  private btnRestart: HTMLElement;
+
+  private readonly _enemyRefillDurationMs = 600;
+  public get enemyRefillDurationMs() {
+    return this._enemyRefillDurationMs;
+  }
 
   private _map: TiledResource;
-  private _nextScene: string;
 
   private _cells: Cell[] = [];
   public get cells() {
@@ -72,14 +79,26 @@ export class GameScene extends Scene {
     return this._targetScore;
   }
 
-  constructor(map: TiledResource, nextScene: string) {
+  private readonly _enragedMaxPerTurn: number = 3;
+  private readonly _enragedThreatIncreaseTurnsMinor = 2;
+  private readonly _enragedThreatIncreaseTurnsMajor = 4;
+  private readonly _enragedChanceMinIncrease: number = 0.1;
+  private readonly _enragedChanceMaxIncrease: number = 0.2;
+  private _numToEnrageMin: number = 0;
+  private _numToEnrageMax: number = 0;
+  private _enragedChanceMin: number = 0;
+  private _enragedChanceMax: number = 0;
+  private _turn: number = 1;
+
+  constructor(map: TiledResource) {
     super();
 
     this.targetScoreVal = document.getElementById('targetScore')!;
     this.clearElement = document.getElementById('clearElement')!;
+    this.healthDepletedElement = document.getElementById('healthDepletedElement')!;
+    this.btnRestart = document.getElementById('btnRestart')!;
 
     this._map = map;
-    this._nextScene = nextScene;
   }
 
   onInitialize(engine: Engine): void {
@@ -95,6 +114,7 @@ export class GameScene extends Scene {
     this.targetScoreVal.textContent = `${this._targetScore}`;
 
     html.hideElement(this.clearElement);
+    html.hideElement(this.healthDepletedElement);
 
     const objects = this._map.getObjectLayers('obje');
     this.addPlayer(objects[0]);
@@ -116,6 +136,10 @@ export class GameScene extends Scene {
       this._pointerDown = false;
     });
     engine.input.pointers.primary.on('move', evt => {
+      if (!this.player || this.player.isDead) {
+        return;
+      }
+
       for (let c of this.cells) {
         // rectangular hover
         // const upperBound = c.pos.y - (c.height / 2);
@@ -140,7 +164,11 @@ export class GameScene extends Scene {
     });
 
     this.events.on(GameSceneEvents.CompleteStage, () => {
-      this.engine.goToScene(this._nextScene);
+      SceneManager.goToNextScene(this.engine);
+    });
+
+    this.btnRestart.addEventListener('click', () => {
+      SceneManager.goToScene(SceneManager.getFirstSceneData(), this.engine, SceneManager.getCurrentSceneData(this.engine));
     });
   }
 
@@ -161,6 +189,57 @@ export class GameScene extends Scene {
       cell: cell,
     });
     this.add(this.player!);
+
+    this._player!.events.on(PlayerEvents.HealthDepleted, () => {
+      html.unhideElement(this.healthDepletedElement);
+
+      for (let c of this.cells) {
+        c.hovered = false;
+      }
+    });
+
+    this._player!.events.on(PlayerEvents.TurnEnded, evt => {
+      const neighbors = this._player!.cell.getOrthogonalNeighbors();
+      const enragedCells = neighbors.filter(c => c.occupant instanceof EnemyCharacter && (c.occupant as EnemyCharacter).enraged);
+      (evt as TurnEndedEvent).numAttacks += enragedCells.length;
+    })
+
+    this._player!.events.on(PlayerEvents.NextTurnStarted, () => {
+      this._turn++;
+
+      if (this._turn % this._enragedThreatIncreaseTurnsMinor === 0) {
+        this._enragedChanceMin = Math.min(this._enragedChanceMin + this._enragedChanceMinIncrease, 1.0);
+        this._enragedChanceMax = Math.min(this._enragedChanceMax + this._enragedChanceMaxIncrease, 1.0);
+
+        if (this._turn % this._enragedThreatIncreaseTurnsMajor === 0) {
+          this._numToEnrageMin = Math.min(this._numToEnrageMin + 1, this._enragedMaxPerTurn);
+        }
+        this._numToEnrageMax = Math.min(this._numToEnrageMax + 1, this._enragedMaxPerTurn);
+      }
+
+      let availableEnemies = this.cells.filter(c => c.occupant instanceof EnemyCharacter && !(c.occupant as EnemyCharacter).enraged).map(c => c.occupant as EnemyCharacter);
+
+      const numToEnrage = rand.integer(this._numToEnrageMin, this._numToEnrageMax);
+      Logger.getInstance().info(`Turn ${this._turn} started. Enraged chance: [${this._enragedChanceMin},${this._enragedChanceMax}], # to enrage: [${this._numToEnrageMin},${this._numToEnrageMax}] -> picked ${numToEnrage}`);
+
+      for (let i = 0; i < numToEnrage; i++) {
+        const enrageChanceThreshold = rand.floating(this._enragedChanceMin, this._enragedChanceMax);
+        const enrageChance = rand.next();
+        Logger.getInstance().info(`..enraged attempt #${i + 1}: ${enrageChanceThreshold}, rolled ${enrageChance} -> ${(enrageChance <= enrageChanceThreshold ? 'enraging!' : 'staying calm')}`);
+
+        if (enrageChance <= enrageChanceThreshold) {
+          if (availableEnemies.length === 0) {
+            Logger.getInstance().info(`....nobody left to enrage`);
+            break;
+          }
+
+          const toEnrageIdx = rand.integer(0, availableEnemies.length - 1);
+          availableEnemies[toEnrageIdx].enraged = true;
+          Logger.getInstance().info(`....chose enemy with id ${availableEnemies[toEnrageIdx].id} to enrage`);
+          availableEnemies.splice(toEnrageIdx, 1);
+        }
+      }
+    });
   }
 
   addEnemies(layer: ObjectLayer) {
@@ -235,7 +314,7 @@ export class GameScene extends Scene {
     // todo: they really should fall in rows to look nicer (filling in from the bottom up).
     // can we do that with a small delay per row? maybe track the number of unique y coordinates we've seen and map them to row number,
     // use that as an input to this?
-    enemy.actions.moveTo({pos: c.pos, duration: 600, easing: EasingFunctions.EaseInCubic});
+    enemy.actions.moveTo({pos: c.pos, duration: this.enemyRefillDurationMs, easing: EasingFunctions.EaseInCubic});
   }
 
   public refillEnemies() {
@@ -274,10 +353,12 @@ export class GameScene extends Scene {
   }
 
   public slideOccupantToNewCell(source: Cell, target: Cell) {
+    const moveDuration = 250;
+
     // todo: pick an appropriate speed. this feels _okay_, but not great.
     // previously, sliding down happened over the same period of time as a new enemy spawning, so one was slow and the other was fast and it looked dumb.
     // i'd like to have them slide down together, but that means coordinating the two somehow.
-    source.occupant!.actions.moveTo({pos: target.pos, duration: 250, easing: EasingFunctions.EaseInCubic})
+    source.occupant!.actions.moveTo({pos: target.pos, duration: moveDuration, easing: EasingFunctions.EaseInCubic})
 
     let occupant = source.occupant as EnemyCharacter;
     source.occupant = undefined;

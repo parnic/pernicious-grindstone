@@ -43,7 +43,7 @@ body {
 }
 
 .excalibur-scale-center {
-  transform-origin: center;
+  transform-origin: 50% 0;
   transform: scale(var(--pixel-conversion), var(--pixel-conversion));
 }
 
@@ -71,7 +71,12 @@ body {
   text-align: right;
 }
 
-#btnGo {
+.center {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+button {
   color: #fff;
   font-weight: 800;
   font-size: 1rem;
@@ -86,6 +91,9 @@ body {
     5px 5px 7px rgb(0 0 0 / .11),
     10px 10px 15px rgb(0 0 0 / .11),
     50px 50px 60px rgb(0 0 0 / .11);
+}
+
+#btnGo {
   transition: transform .2s ease;
 }
 
@@ -93,28 +101,43 @@ body {
   transform: scale(.9);
 }
 
-#btnGo:disabled {
+button:disabled {
   color: #aaa;
   background-color: #333;
 }
 
-#scoreElement {
+#btnRestart:hover {
+  text-shadow: -2px -2px 0.5rem #000, 2px -2px 0.5rem #000, -2px 2px 0.5rem #000, 2px 2px 0.5rem #000;
+}
+
+#btnRestart:active {
+  color: #00d033;
+}
+
+#playerInfoElement {
   position: absolute;
   right: 0;
   top: 0;
+  font-size: 0.75rem;
 }
 
-#clearElement {
+.centerFullScreen {
   position: absolute;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
 
   font-size: 5rem;
+}
 
+.white-shadow {
   text-shadow: -2px -2px 0.5rem #fff, 2px -2px 0.5rem #fff, -2px 2px 0.5rem #fff, 2px 2px 0.5rem #fff;
 }
 
 .gold-shadow {
   text-shadow: -2px -2px 0.5rem #FFD700, 2px -2px 0.5rem #FFD700, -2px 2px 0.5rem #FFD700, 2px 2px 0.5rem #FFD700;
+}
+
+.red-shadow {
+  text-shadow: -2px -2px 0.5rem #f00, 2px -2px 0.5rem #f00, -2px 2px 0.5rem #f00, 2px 2px 0.5rem #f00;
 }

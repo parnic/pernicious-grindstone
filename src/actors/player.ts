@@ -1,4 +1,4 @@
-import { Actor, ActorArgs, EasingFunctions, ElasticToActorStrategy, Engine, Keys, Line, Logger, Vector } from "excalibur";
+import { Actor, ActorArgs, ActorEvents, Color, EasingFunctions, ElasticToActorStrategy, Engine, EventEmitter, GameEvent, Keys, Line, Logger, Vector } from "excalibur";
 import { ResourceManager } from "../utilities/resource-manager";
 import { Cell, CellOccupant } from "./cell";
 import { GameScene, GameSceneEvents, TargetScoreReachedEvent } from "../scenes/game-scene";
@@ -7,11 +7,37 @@ import { rand } from "../utilities/math";
 import { Exit } from "./exit";
 import { html } from "../utilities/html";
 
+type PlayerEvents = {
+    HealthDepleted: HealthDepletedEvent;
+    TurnEnded: TurnEndedEvent;
+    NextTurnStarted: NextTurnStartedEvent;
+}
+
+export class HealthDepletedEvent extends GameEvent<void> {
+    constructor() {
+        super();
+    }
+}
+
+export class NextTurnStartedEvent extends GameEvent<void> { }
+
+export class TurnEndedEvent extends GameEvent<void> {
+    numAttacks: number = 0;
+}
+
+export const PlayerEvents = {
+    HealthDepleted: 'healthdepleted',
+    TurnEnded: 'turnended',
+    NextTurnStarted: 'nextturnstarted',
+} as const;
+
 export type PlayerCharacterArgs = ActorArgs & {
     cell: Cell;
 }
 
 export class PlayerCharacter extends Actor implements CellOccupant {
+    public events = new EventEmitter<ActorEvents & PlayerEvents>();
+
     private willScoreRoot: HTMLElement;
     private willScoreVal: HTMLElement;
     private scoreRoot: HTMLElement;
@@ -19,6 +45,7 @@ export class PlayerCharacter extends Actor implements CellOccupant {
     private goButton: HTMLElement;
     private targetScoreGroup: HTMLElement;
     private scoreTextGroup: HTMLElement;
+    private playerHealthIndicator: HTMLElement;
 
     private _score: number = 0;
     public get score() {
@@ -43,19 +70,52 @@ export class PlayerCharacter extends Actor implements CellOccupant {
 
     private _pathLines: Actor[] = [];
 
+    private _healthMax: number = 3;
+    public get healthMax(): number {
+        return this._healthMax;
+    }
+
+    private _health: number = 0;
+    public get health(): number {
+        return this._health;
+    }
+    private set health(inHealth: number) {
+        if (inHealth < 0) {
+            inHealth = 0;
+        }
+
+        if (this.health == inHealth) {
+            return;
+        }
+
+        this._health = inHealth;
+        this.updateHealthUi();
+
+        if (this.isDead) {
+            this.events.emit(PlayerEvents.HealthDepleted);
+        }
+    }
+
+    public get isDead(): boolean {
+        return this.health == 0;
+    }
+
     constructor(config?: PlayerCharacterArgs) {
         super(config);
 
         this._cell = config?.cell!;
         this._cell.occupant = this;
 
+        this._health = this.healthMax;
+
         this.willScoreRoot = document.getElementById('pathElement')!;
         this.willScoreVal = document.getElementById('pathScore')!;
-        this.scoreRoot = document.getElementById('scoreElement')!;
+        this.scoreRoot = document.getElementById('playerInfoElement')!;
         this.scoreVal = document.getElementById('score')!;
         this.goButton = document.getElementById('btnGo')!;
         this.targetScoreGroup = document.getElementById('targetScoreGroup')!;
         this.scoreTextGroup = document.getElementById('scoreText')!;
+        this.playerHealthIndicator = document.getElementById('playerHealthIndicator')!;
     }
 
     canHover(pathTail: Cell): boolean {
@@ -85,6 +145,7 @@ export class PlayerCharacter extends Actor implements CellOccupant {
         });
 
         this.updateScoreUi();
+        this.updateHealthUi();
     }
 
     public onPostUpdate(_engine: Engine, _delta: number): void {
@@ -158,7 +219,7 @@ export class PlayerCharacter extends Actor implements CellOccupant {
         this.updateScoreUi();
     }
 
-    updateScoreUi() {
+    private updateScoreUi() {
         if (this.path.length === 0) {
             html.hideElement(this.willScoreRoot);
             this.goButton.setAttribute("disabled", "true");
@@ -176,6 +237,18 @@ export class PlayerCharacter extends Actor implements CellOccupant {
             html.unhideElement(this.targetScoreGroup);
             this.scoreTextGroup.classList.remove('gold-shadow');
         }
+    }
+
+    private updateHealthUi() {
+        let healthString = "";
+        for (let i = 0; i < this.health; i++) {
+            healthString += "❤️";
+        }
+        for (let i = this.health; i < this.healthMax; i++) {
+            healthString += "🩶";
+        }
+
+        this.playerHealthIndicator.textContent = healthString;
     }
 
     public get pathTail(): Cell {
@@ -221,7 +294,7 @@ export class PlayerCharacter extends Actor implements CellOccupant {
             moveChain = moveChain.delay(delay);
             // todo: move speed frequently puts the player past the target location and then snaps them back, visibly.
             // can we fix it? somehow?
-            moveChain = moveChain.moveTo({pos: this.path[idx].pos, duration: moveDuration, easing: EasingFunctions.EaseInQuad});
+            moveChain = moveChain.moveTo({ pos: this.path[idx].pos, duration: moveDuration, easing: EasingFunctions.EaseInQuad });
             if (this.path[killIdx].occupant instanceof EnemyCharacter) {
                 moveChain = moveChain.callMethod(() => this.path[killIdx].occupant?.kill());
             }
@@ -249,7 +322,7 @@ export class PlayerCharacter extends Actor implements CellOccupant {
                 .delay(3000)
                 .callMethod(() => this.gameScene.events.emit(GameSceneEvents.CompleteStage));
         } else {
-            moveChain = moveChain.callMethod(() => {
+            const turnEndedPromise = moveChain.callMethod(() => {
                 // todo: if our final cell is the exit, play the exit fanfare and move on.
                 this._cell.occupant = undefined;
                 this._cell = this.path[this.path.length - 1];
@@ -258,14 +331,40 @@ export class PlayerCharacter extends Actor implements CellOccupant {
                 this.updateScoreUi();
             }).delay(
                 1000
-            ).callMethod(() => {
-                this.scene!.camera.removeStrategy(camStrategy);
-                this.scene!.camera.move(origCamPos, 250, EasingFunctions.EaseInOutCubic);
-                this.scene!.camera.zoomOverTime(1, 250, EasingFunctions.EaseInOutCubic);
+            ).toPromise();
 
-                this.gameScene.refillEnemies();
-                killedEnemies.forEach(e => e.updateNeighborSelected());
-                this._going = false;
+            turnEndedPromise.then(() => {
+                const t = new TurnEndedEvent();
+                this.events.emit(PlayerEvents.TurnEnded, t);
+
+                let moveChain = this.actions.delay(0);
+                if (t.numAttacks > 0) {
+                    this.health -= t.numAttacks;
+                    if (this.health > 0) {
+                        // todo: this isn't working. find a damage effect that looks good.
+                        moveChain = moveChain.repeat(ctx => {
+                            ctx.flash(Color.Red, 100).delay(100);
+                        }, 6);
+                    }
+                }
+
+                if (this.health === 0) {
+                    return;
+                }
+
+                moveChain = moveChain.callMethod(() => {
+                    this.scene!.camera.removeStrategy(camStrategy);
+                    this.scene!.camera.move(origCamPos, 250, EasingFunctions.EaseInOutCubic);
+                    this.scene!.camera.zoomOverTime(1, 250, EasingFunctions.EaseInOutCubic);
+    
+                    this.gameScene.refillEnemies();
+                    killedEnemies.forEach(e => e.updateNeighborSelected());
+                    this._going = false;
+                }).delay(
+                    this.gameScene.enemyRefillDurationMs
+                ).callMethod(() => {
+                    this.events.emit(PlayerEvents.NextTurnStarted);
+                });
             });
         }
     }

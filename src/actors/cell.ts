@@ -109,6 +109,11 @@ export class Cell extends Actor implements Hoverable {
         return neighbors;
     }
 
+    public getOrthogonalNeighbors(): Cell[] {
+        const neighbors = this.getNeighbors().filter(c => c.pos.x == this.pos.x || c.pos.y == this.pos.y);
+        return neighbors;
+    }
+
     public getCellBeneath(): Cell | undefined {
         const southNeighbor = this.gameScene.cells.find((c) =>
             c.pos.y === this.pos.y + this.height &&

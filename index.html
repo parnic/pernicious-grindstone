@@ -13,7 +13,10 @@
       <div id="uiRoot" class="excalibur-scale m-3">
         <button id="btnGo" class="hide" disabled="true">⚔️ Go!</button>
       </div>
-      <div id="scoreElement" class="hide excalibur-scale-right m-3 text-align-right">
+      <div id="playerInfoElement" class="hide excalibur-scale-right m-3 text-align-right">
+        <div id="playerHealthElement">
+          Health: <span id="playerHealthIndicator">❤️❤️❤️</span>
+        </div>
         <div id="scoreText">
           Score: <span id="score">0</span><span id="targetScoreGroup"> / <span id="targetScore">50</span></span>
         </div>
@@ -21,8 +24,14 @@
           Will score: <span id="pathScore">14</span>
         </div>
       </div>
-      <div id="clearElement" class="hide">
+      <div id="clearElement" class="hide white-shadow centerFullScreen">
         CLEAR!
+      </div>
+      <div id="healthDepletedElement" class="hide centerFullScreen">
+        <div class="red-shadow">
+          YOU DIED
+        </div>
+        <button id="btnRestart" class="excalibur-scale-center center">Restart</button>
       </div>
     </main>
   </body>

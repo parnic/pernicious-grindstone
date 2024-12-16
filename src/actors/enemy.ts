@@ -24,6 +24,7 @@ interface EnemySprites {
     surprised?: Sprite | undefined;
     surprised2?: Sprite | undefined;
     dead?: Sprite | undefined;
+    enraged?: Sprite | undefined;
 }
 
 export function isHoverable(object: any): object is Hoverable {
@@ -141,6 +142,24 @@ export class EnemyCharacter extends Actor implements Hoverable, CellOccupant {
         } else {
             this.updateFaceSprite();
         }
+    }
+
+    private _enraged: boolean = false;
+    public get enraged() {
+        return this._enraged;
+    }
+    public set enraged(inEnraged: boolean) {
+        if (this._enraged == inEnraged) {
+            return;
+        }
+        // should we block trying to de-enrage someone? that should only be possible by being killed...
+
+        if (inEnraged) {
+            this._neighborSelected = false;
+        }
+
+        this._enraged = inEnraged;
+        this.updateFaceSprite();
     }
 
     public bodyActor: Actor;
@@ -264,12 +283,18 @@ export class EnemyCharacter extends Actor implements Hoverable, CellOccupant {
         this.sprites.dead.width = this.faceActor.width;
         this.sprites.dead.height = this.faceActor.height;
 
+        this.sprites.enraged = ImageResources.enemyFaces.angry.toSprite();
+        this.sprites.enraged.width = this.faceActor.width;
+        this.sprites.enraged.height = this.faceActor.height;
+
         this.faceActor.graphics.use(this.sprites.regular);
     }
 
     private updateFaceSprite() {
         if (this.selected) {
             this.faceActor.graphics.use(this.sprites.dead!);
+        } else if (this.enraged) {
+            this.faceActor.graphics.use(this.sprites.enraged!);
         } else if (this.hovered || this.neighborSelected) {
             this.faceActor.graphics.use(this.sprites.surprised!);
         } else {
@@ -345,6 +370,10 @@ export class EnemyCharacter extends Actor implements Hoverable, CellOccupant {
     }
 
     protected notifyNeighborSelected() {
+        if (this.enraged) {
+            return;
+        }
+
         var neighbors = this.cell.getNeighbors();
         let numSelected = 0;
         for (const e of neighbors.map(c => c.occupant as EnemyCharacter)) {
