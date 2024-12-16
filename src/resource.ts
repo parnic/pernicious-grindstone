@@ -1,5 +1,5 @@
 import { TiledResource } from "@excaliburjs/plugin-tiled";
-import { ImageSource } from "excalibur";
+import { FontSource, ImageSource } from "excalibur";
 
 import imageEnemyType01 from '../img/kenney-shape-characters/blue_body_circle.png'
 import imageEnemyType02 from '../img/kenney-shape-characters/red_body_square.png'
@@ -24,6 +24,8 @@ import stage03Path from '../res/stage-03.tmx';
 import spriteSheet from '../img/kenney-pixel-shmup/tiles_packed.png';
 import tsxPath from '../res/kenney-pixel-shmup.tsx';
 
+import SilkscreenFont from './fonts/Silkscreen-Regular.ttf';
+
 export const Resources = {
   stage01: new TiledResource(stage01Path, {
     startZIndex: -10,
@@ -47,6 +49,7 @@ export const Resources = {
     ]
   }),
   spritesheet: new ImageSource(spriteSheet),
+  PixelFont: new FontSource(SilkscreenFont, 'Silkscreen')
 };
 
 export const ImageResources = {
