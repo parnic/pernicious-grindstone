@@ -1,5 +1,5 @@
 import { TiledResource } from "@excaliburjs/plugin-tiled";
-import { Engine, GameEvent, Scene } from "excalibur";
+import { Engine, SceneActivationContext } from "excalibur";
 import { GameScene, GameSceneEvents } from "./game-scene";
 import { html } from "../utilities/html";
 import { PlayerEvents } from "../actors/player";
@@ -9,11 +9,11 @@ export class TutorialScene extends GameScene {
 
     private readonly _tutorialSteps = [
         'Starting at the 💣, select a chain of like-colored adjacent enemies, then press Go to attack.',
-        'Each enemy is worth one point. Once you reach the target score, the exit door will open. Get to the exit!',
+        'Each enemy is worth one point. Once you reach the target score shown above, the exit door will open.',
         "Uh oh, an enemy is angry! If you end your chain next to an angry enemy, you lose a heart. Lose all your hearts and it's game over!",
     ];
 
-    private readonly _tutorialExitOpenMessage = "The exit is open! Get there to finish the level!"
+    private readonly _tutorialExitOpenMessage = "The exit is open! Move onto the exit to finish the level!"
 
     private _tutorialElement: HTMLElement;
 
@@ -34,6 +34,10 @@ export class TutorialScene extends GameScene {
         this.player!.on(PlayerEvents.NextTurnStarted, () => this.goNextTutorialPhase());
 
         this.events.once(GameSceneEvents.TargetScoreReached, () => this.notifyDoorOpen());
+    }
+
+    onDeactivate(context: SceneActivationContext): void {
+        html.hideElement(this._tutorialElement);
     }
 
     private onClick() {
