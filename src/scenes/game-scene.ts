@@ -8,6 +8,7 @@ import { Exit } from "../actors/exit";
 import { ObjectLayer } from "@excaliburjs/plugin-tiled/dist/src/resource/object-layer";
 import { html } from "../utilities/html";
 import { SceneManager } from "../scene-manager";
+import { Audio } from "../utilities/audio";
 
 type GameSceneEvents = {
   TargetScoreReached: TargetScoreReachedEvent;
@@ -155,6 +156,8 @@ export class GameScene extends Scene {
     });
 
     this.events.on(GameSceneEvents.ExitReached, () => {
+      Audio.playExitSfx();
+
       if (SceneManager.isFinalStage(this.engine)) {
         html.showElement(this.youWinElement);
       } else {
@@ -265,6 +268,7 @@ export class GameScene extends Scene {
 
         const toEnrageIdx = rand.integer(0, availableEnemies.length - 1);
         availableEnemies[toEnrageIdx].enraged = true;
+        Audio.playEnemyEnragedSfx();
         Logger.getInstance().info(`....chose enemy with id ${availableEnemies[toEnrageIdx].id} to enrage`);
         availableEnemies.splice(toEnrageIdx, 1);
       }

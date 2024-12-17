@@ -1,5 +1,5 @@
 import { TiledResource } from "@excaliburjs/plugin-tiled";
-import { FontSource, ImageSource } from "excalibur";
+import { FontSource, ImageSource, Sound } from "excalibur";
 
 import imageEnemyType01 from '../img/kenney-shape-characters/blue_body_circle.png'
 import imageEnemyType02 from '../img/kenney-shape-characters/red_body_square.png'
@@ -26,6 +26,19 @@ import spriteSheet from '../img/kenney-pixel-shmup/tiles_packed.png';
 import tsxPath from '../res/kenney-pixel-shmup.tsx';
 
 import SilkscreenFont from './fonts/Silkscreen-Regular.ttf';
+
+import impactSfx01 from '../sound/sfx/impacts/zapsplat_impacts_body_hit_punch_or_kick_whoosh_001_90395.mp3'
+import impactSfx02 from '../sound/sfx/impacts/zapsplat_impacts_body_hit_punch_or_kick_whoosh_002_90396.mp3'
+import impactSfx03 from '../sound/sfx/impacts/zapsplat_impacts_body_hit_punch_or_kick_whoosh_003_90397.mp3'
+import impactSfx04 from '../sound/sfx/impacts/zapsplat_impacts_body_hit_punch_or_kick_whoosh_004_90398.mp3'
+
+import reachedExitSfx from '../sound/sfx/ui/mixkit-game-bonus-reached-2065.wav'
+
+import cellSelectedSfx01 from '../sound/sfx/ui/mixkit-game-ball-tap-2073.wav'
+
+import bgm01 from '../sound/music/chip-mode-danijel-zambo-main-version-1431-02-05.mp3'
+import bgm02 from '../sound/music/game-over-danijel-zambo-main-version-1394-02-03.mp3'
+import bgm03 from '../sound/music/itty-bitty-8-bit-kevin-macleod-main-version-7983-03-13.mp3'
 
 export const Resources = {
   stage01: new TiledResource(stage01Path, {
@@ -74,4 +87,24 @@ export const ImageResources = {
     surprisedBlinking: new ImageSource(imageEnemyFaceSurprisedBlinking),
     dead: new ImageSource(imageEnemyFaceDead),
   }
+}
+
+export const SfxResources = {
+  impacts: [
+    new Sound(impactSfx01),
+    new Sound(impactSfx02),
+    new Sound(impactSfx03),
+    new Sound(impactSfx04),
+  ],
+  reachedExit: [
+    new Sound(reachedExitSfx),
+  ],
+  cellSelected: [
+    new Sound(cellSelectedSfx01),
+  ],
+  bgm: [
+    new Sound(bgm01),
+    new Sound(bgm02),
+    new Sound(bgm03),
+  ],
 }

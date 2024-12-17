@@ -6,6 +6,7 @@ import { EnemyCharacter, isHoverable } from "./enemy";
 import { rand } from "../utilities/math";
 import { Exit } from "./exit";
 import { html } from "../utilities/html";
+import { Audio } from "../utilities/audio";
 
 type PlayerEvents = {
     HealthDepleted: HealthDepletedEvent;
@@ -198,6 +199,8 @@ export class PlayerCharacter extends Actor implements CellOccupant {
     }
 
     public select(enemy?: EnemyCharacter) {
+        Audio.playSelectedSfx();
+
         if (enemy instanceof PlayerCharacter) {
             for (let c of this.path) {
                 if (isHoverable(c.occupant)) {

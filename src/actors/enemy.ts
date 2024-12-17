@@ -6,6 +6,7 @@ import { GameScene } from "../scenes/game-scene";
 import { PlayerCharacter } from "./player";
 import { Exit } from "./exit";
 import { getOutlineMaterial } from "../materials/outline";
+import { Audio } from "../utilities/audio";
 
 export type EnemyCharacterArgs = ActorArgs & {
     enemyType: number;
@@ -405,6 +406,7 @@ export class EnemyCharacter extends Actor implements Hoverable, CellOccupant {
 
     onPreKill(_scene: Scene): void {
         spawnDieEffect(this, _scene);
+        Audio.playImpactSfx();
     }
 
     onPostKill(_scene: Scene): void {
