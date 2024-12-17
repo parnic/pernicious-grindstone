@@ -92,6 +92,7 @@ export class GameScene extends Scene {
   private _turn: number = 1;
 
   protected _enemyCounter: number = 0;
+  protected _availableEnemyTypes: number[] = [0, 1, 2];
 
   constructor(map: TiledResource) {
     super();
@@ -116,6 +117,11 @@ export class GameScene extends Scene {
       this._targetScore = targetScoreProp.value;
     }
     this.targetScoreVal.textContent = `${this._targetScore}`;
+
+    const availableEnemyTypesProp = this._map.map.properties?.find(p => p.name === "available-enemy-types");
+    if (availableEnemyTypesProp) {
+      this._availableEnemyTypes = JSON.parse(availableEnemyTypesProp.value as string);
+    }
 
     // todo: allow each map to specify what enemy types are valid.
     // for example: on the green map, want to make sure we don't use any green or nearly-green enemy skins, but
@@ -333,7 +339,7 @@ export class GameScene extends Scene {
       height: c.height,
       collisionType: CollisionType.PreventCollision,
       color: Color.Transparent,
-      enemyType: rand.integer(0, 2),
+      enemyType: this._availableEnemyTypes[rand.integer(0, this._availableEnemyTypes.length)],
       cell: c,
     });
 

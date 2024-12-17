@@ -4,6 +4,7 @@ import { FontSource, ImageSource } from "excalibur";
 import imageEnemyType01 from '../img/kenney-shape-characters/blue_body_circle.png'
 import imageEnemyType02 from '../img/kenney-shape-characters/red_body_square.png'
 import imageEnemyType03 from '../img/kenney-shape-characters/purple_body_rhombus.png'
+import imageEnemyType04 from '../img/kenney-shape-characters/green_body_square.png'
 
 import imageEnemyFaceHappy from '../img/kenney-shape-characters/face_a.png'
 import imageEnemyFaceAnnoyed from '../img/kenney-shape-characters/face_b.png'
@@ -57,6 +58,7 @@ export const ImageResources = {
     new ImageSource(imageEnemyType01),
     new ImageSource(imageEnemyType02),
     new ImageSource(imageEnemyType03),
+    new ImageSource(imageEnemyType04),
   ],
   enemyFaces: {
     happy: new ImageSource(imageEnemyFaceHappy),

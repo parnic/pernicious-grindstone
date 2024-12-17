@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="30" height="20" tilewidth="16" tileheight="16" infinite="0" nextlayerid="5" nextobjectid="207">
  <properties>
+  <property name="available-enemy-types" value="[0,2,3]"/>
   <property name="excalibur" type="bool" value="true"/>
   <property name="target-score" type="int" value="65"/>
  </properties>
