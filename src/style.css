@@ -139,11 +139,11 @@ button:disabled {
   background-color: #333;
 }
 
-#btnRestart:hover {
+.btn-restart:hover {
   text-shadow: -2px -2px 0.5rem #000, 2px -2px 0.5rem #000, -2px 2px 0.5rem #000, 2px 2px 0.5rem #000;
 }
 
-#btnRestart:active {
+.btn-restart:active {
   color: #00d033;
 }
 

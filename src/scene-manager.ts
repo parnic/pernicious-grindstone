@@ -55,6 +55,11 @@ export class SceneManager {
         return this.sceneList[currentSceneDataIdx];
     }
 
+    static isFinalStage(engine: Engine): boolean {
+        let currentSceneDataIdx = this.sceneList.findIndex(s => s.name == engine.currentSceneName);
+        return currentSceneDataIdx == this.sceneList.length - 1;
+    }
+
     static getNextSceneData(engine: Engine) : SceneData | undefined {
         let currentSceneDataIdx = this.sceneList.findIndex(s => s.name == engine.currentSceneName);
         if (currentSceneDataIdx == -1) {
@@ -81,7 +86,7 @@ export class SceneManager {
         }
 
         if (nextSceneData.type === SceneType.Tutorial) {
-            engine.addScene(nextSceneData.name, new TutorialScene(nextSceneData.map));
+            engine.addScene(nextSceneData.name, new TutorialScene(nextSceneData.map, {showTutorial: !currentSceneData}));
         } else {
             engine.addScene(nextSceneData.name, new GameScene(nextSceneData.map));
         }
@@ -93,6 +98,8 @@ export class SceneManager {
     static async goToNextScene(engine: Engine) {
         const curr = this.getCurrentSceneData(engine);
         const next = this.getNextSceneData(engine);
-        await this.goToScene(next!, engine, curr);
+        if (next) {
+            await this.goToScene(next!, engine, curr);
+        }
     }
 }

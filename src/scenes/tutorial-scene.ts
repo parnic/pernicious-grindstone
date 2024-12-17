@@ -1,8 +1,12 @@
 import { TiledResource } from "@excaliburjs/plugin-tiled";
-import { Engine, SceneActivationContext } from "excalibur";
+import { SceneActivationContext } from "excalibur";
 import { GameScene, GameSceneEvents } from "./game-scene";
 import { html } from "../utilities/html";
 import { PlayerEvents } from "../actors/player";
+
+export type TutorialSceneConfigArgs = {
+    showTutorial?: boolean;
+}
 
 export class TutorialScene extends GameScene {
     private _tutorialPhase = -1;
@@ -16,24 +20,30 @@ export class TutorialScene extends GameScene {
     private readonly _tutorialExitOpenMessage = "The exit is open! Move onto the exit to finish the level!"
 
     private _tutorialElement: HTMLElement;
+    _showTutorial: boolean = true;
 
-    constructor(map: TiledResource) {
+    constructor(map: TiledResource, config?: TutorialSceneConfigArgs) {
         super(map);
 
         this._tutorialElement = document.getElementById('tutorial')!;
+
+        if (config?.showTutorial !== undefined) {
+            this._showTutorial = config.showTutorial;
+        }
     }
 
-    onInitialize(engine: Engine): void {
-        super.onInitialize(engine);
-
-        this.goNextTutorialPhase();
+    onActivate(context: SceneActivationContext<unknown>): void {
+        if (!this._showTutorial) {
+            return;
+        }
 
         document.addEventListener('click', () => this.onClick());
-        engine.input.pointers.primary.on('down', () => this.onClick());
+        this.engine.input.pointers.primary.on('down', () => this.onClick());
 
         this.player!.on(PlayerEvents.NextTurnStarted, () => this.goNextTutorialPhase());
-
         this.events.once(GameSceneEvents.TargetScoreReached, () => this.notifyDoorOpen());
+
+        this.goNextTutorialPhase();
     }
 
     onDeactivate(context: SceneActivationContext): void {

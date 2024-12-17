@@ -44,8 +44,9 @@ export class GameScene extends Scene {
 
   private targetScoreVal: HTMLElement;
   private clearElement: HTMLElement;
+  private youWinElement: HTMLElement;
   private healthDepletedElement: HTMLElement;
-  private btnRestart: HTMLElement;
+  private btnRestart: HTMLCollectionOf<Element>;
 
   private readonly _enemyRefillDurationMs = 600;
   public get enemyRefillDurationMs() {
@@ -97,8 +98,9 @@ export class GameScene extends Scene {
 
     this.targetScoreVal = document.getElementById('targetScore')!;
     this.clearElement = document.getElementById('clearElement')!;
+    this.youWinElement = document.getElementById('youWinElement')!;
     this.healthDepletedElement = document.getElementById('healthDepletedElement')!;
-    this.btnRestart = document.getElementById('btnRestart')!;
+    this.btnRestart = document.getElementsByClassName('btn-restart');
 
     this._map = map;
   }
@@ -121,6 +123,7 @@ export class GameScene extends Scene {
 
     html.hideElement(this.clearElement);
     html.hideElement(this.healthDepletedElement);
+    html.hideElement(this.youWinElement);
 
     const objects = this._map.getObjectLayers('obje');
     this.addPlayer(objects[0]);
@@ -146,12 +149,22 @@ export class GameScene extends Scene {
     });
 
     this.events.on(GameSceneEvents.ExitReached, () => {
-      html.showElement(this.clearElement);
+      if (SceneManager.isFinalStage(this.engine)) {
+        html.showElement(this.youWinElement);
+      } else {
+        html.showElement(this.clearElement);
+      }
     });
 
     this.events.on(GameSceneEvents.CompleteStage, () => {
       SceneManager.goToNextScene(this.engine);
     });
+
+    for (let i = 0; i < this.btnRestart.length; i++) {
+      this.btnRestart.item(i)!.addEventListener('click', () => {
+        SceneManager.goToScene(SceneManager.getFirstSceneData(), this.engine, SceneManager.getCurrentSceneData(this.engine));
+      });
+    }
   }
 
   protected onPointerMove(pointerPos: Vector, fromMoveEvent: boolean = false) {
