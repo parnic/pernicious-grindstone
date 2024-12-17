@@ -1,4 +1,4 @@
-import { CollisionType, Color, EasingFunctions, Engine, EventEmitter, GameEvent, Logger, Scene, SceneEvents } from "excalibur";
+import { CollisionType, Color, EasingFunctions, Engine, EventEmitter, GameEvent, Logger, Scene, SceneEvents, Vector } from "excalibur";
 import { EnemyCharacter } from "../actors/enemy";
 import { rand } from "../utilities/math";
 import { PlayerCharacter, PlayerEvents, TurnEndedEvent } from "../actors/player";
@@ -142,27 +142,7 @@ export class GameScene extends Scene {
       this._pointerDown = false;
     });
     engine.input.pointers.primary.on('move', evt => {
-      if (!this.player || this.player.isDead || this.player.going) {
-        return;
-      }
-
-      for (let c of this.cells) {
-        // rectangular hover
-        // const upperBound = c.pos.y - (c.height / 2);
-        // const leftBound = c.pos.x - (c.width / 2);
-        // const lowerBound = c.pos.y + (c.height / 2);
-        // const rightBound = c.pos.x + (c.width / 2);
-        // c.hovered = evt.worldPos.x >= leftBound && evt.worldPos.y >= upperBound && evt.worldPos.x <= rightBound && evt.worldPos.y <= lowerBound;
-
-        // circular hover
-        const lenSq = evt.worldPos.squareDistance(c.pos);
-        const requiredDist = Math.pow(c.width / 2, 2);
-        c.hovered = lenSq <= requiredDist;
-
-        if (this._pointerDown && !(c.occupant instanceof PlayerCharacter) && c !== this.player?.pathTail) {
-          c.pointerdown();
-        }
-      }
+      this.onPointerMove(evt.worldPos, true);
     });
 
     this.events.on(GameSceneEvents.ExitReached, () => {
@@ -172,10 +152,30 @@ export class GameScene extends Scene {
     this.events.on(GameSceneEvents.CompleteStage, () => {
       SceneManager.goToNextScene(this.engine);
     });
+  }
 
-    this.btnRestart.addEventListener('click', () => {
-      SceneManager.goToScene(SceneManager.getFirstSceneData(), this.engine, SceneManager.getCurrentSceneData(this.engine));
-    });
+  protected onPointerMove(pointerPos: Vector, fromMoveEvent: boolean = false) {
+    if (!this.player || this.player.isDead || this.player.going) {
+      return;
+    }
+
+    for (let c of this.cells) {
+      // rectangular hover
+      // const upperBound = c.pos.y - (c.height / 2);
+      // const leftBound = c.pos.x - (c.width / 2);
+      // const lowerBound = c.pos.y + (c.height / 2);
+      // const rightBound = c.pos.x + (c.width / 2);
+      // c.hovered = pointerPos.x >= leftBound && pointerPos.y >= upperBound && pointerPos.x <= rightBound && pointerPos.y <= lowerBound;
+
+      // circular hover
+      const lenSq = pointerPos.squareDistance(c.pos);
+      const requiredDist = Math.pow(c.width / 2, 2);
+      c.hovered = lenSq <= requiredDist;
+
+      if (fromMoveEvent && this._pointerDown && !(c.occupant instanceof PlayerCharacter) && c !== this.player?.pathTail) {
+        c.pointerdown();
+      }
+    }
   }
 
   protected addPlayer(layer: ObjectLayer) {
@@ -298,7 +298,8 @@ export class GameScene extends Scene {
       collisionType: CollisionType.PreventCollision,
     });
 
-    cell.on('pointerdown', () => {
+    cell.on('pointerdown', evt => {
+      this.onPointerMove(evt.worldPos);
       cell.pointerdown();
     });
 
