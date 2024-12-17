@@ -3,16 +3,24 @@ import { Resources } from "./resource";
 import { TiledResource } from "@excaliburjs/plugin-tiled";
 import { TransitionScene } from "./scenes/transition-scene";
 import { GameScene } from "./scenes/game-scene";
+import { TutorialScene } from "./scenes/tutorial-scene";
+
+enum SceneType {
+    Tutorial,
+    Game,
+}
 
 export class SceneData {
     name: string = ''
     map: TiledResource
     nextScene: string = ''
+    type: SceneType = SceneType.Game
 
-    constructor(_name: string, _map: TiledResource, _nextScene: string) {
+    constructor(_name: string, _map: TiledResource, _nextScene: string, _type: SceneType) {
         this.name = _name;
         this.map = _map;
         this.nextScene = _nextScene;
+        this.type = _type;
     }
 }
 
@@ -21,17 +29,20 @@ export class SceneManager {
         {
             name: 'scene01',
             map: Resources.stage01,
-            nextScene: 'scene02'
+            nextScene: 'scene02',
+            type: SceneType.Tutorial,
         },
         {
             name: 'scene02',
             map: Resources.stage02,
-            nextScene: 'scene03'
+            nextScene: 'scene03',
+            type: SceneType.Game,
         },
         {
             name: 'scene03',
             map: Resources.stage03,
-            nextScene: ''
+            nextScene: '',
+            type: SceneType.Game,
         },
     ];
 
@@ -68,7 +79,13 @@ export class SceneManager {
         if (currentSceneData) {
             engine.removeScene(currentSceneData.name);
         }
-        engine.addScene(nextSceneData.name, new GameScene(nextSceneData.map));
+
+        if (nextSceneData.type === SceneType.Tutorial) {
+            engine.addScene(nextSceneData.name, new TutorialScene(nextSceneData.map));
+        } else {
+            engine.addScene(nextSceneData.name, new GameScene(nextSceneData.map));
+        }
+
         await engine.goToScene(nextSceneData.name);
         engine.removeScene('transition');
     }

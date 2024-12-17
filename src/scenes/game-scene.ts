@@ -52,7 +52,7 @@ export class GameScene extends Scene {
     return this._enemyRefillDurationMs;
   }
 
-  private _map: TiledResource;
+  protected _map: TiledResource;
 
   private _cells: Cell[] = [];
   public get cells() {
@@ -90,7 +90,7 @@ export class GameScene extends Scene {
   private _enragedChanceMax: number = 0;
   private _turn: number = 1;
 
-  private _enemyCounter: number = 0;
+  protected _enemyCounter: number = 0;
 
   constructor(map: TiledResource) {
     super();
@@ -114,6 +114,10 @@ export class GameScene extends Scene {
       this._targetScore = targetScoreProp.value;
     }
     this.targetScoreVal.textContent = `${this._targetScore}`;
+
+    // todo: allow each map to specify what enemy types are valid.
+    // for example: on the green map, want to make sure we don't use any green or nearly-green enemy skins, but
+    // on the brown map, probably want to avoid red enemies and use green-ish instead.
 
     html.hideElement(this.clearElement);
     html.hideElement(this.healthDepletedElement);
@@ -174,7 +178,7 @@ export class GameScene extends Scene {
     });
   }
 
-  addPlayer(layer: ObjectLayer) {
+  protected addPlayer(layer: ObjectLayer) {
     const playerStart = layer.getObjectsByName("player_start")[0] as InsertedTile;
     if (!playerStart) {
       throw Error(`cannot find "player_start" object in tilemap`);
@@ -214,38 +218,41 @@ export class GameScene extends Scene {
         this._enragedChanceMin = Math.min(this._enragedChanceMin + this._enragedChanceMinIncrease, 1.0);
         this._enragedChanceMax = Math.min(this._enragedChanceMax + this._enragedChanceMaxIncrease, 1.0);
 
-        if (this._turn % this._enragedThreatIncreaseTurnsMajor === 0) {
-          this._numToEnrageMin = Math.min(this._numToEnrageMin + 1, this._enragedMaxPerTurn);
-        }
         this._numToEnrageMax = Math.min(this._numToEnrageMax + 1, this._enragedMaxPerTurn);
       }
-
-      let availableEnemies = this.cells.filter(c => c.occupant instanceof EnemyCharacter && !(c.occupant as EnemyCharacter).enraged).map(c => c.occupant as EnemyCharacter);
+      if (this._turn % this._enragedThreatIncreaseTurnsMajor === 0) {
+        this._numToEnrageMin = Math.min(this._numToEnrageMin + 1, this._enragedMaxPerTurn);
+      }
 
       const numToEnrage = rand.integer(this._numToEnrageMin, this._numToEnrageMax);
       Logger.getInstance().info(`Turn ${this._turn} started. Enraged chance: [${this._enragedChanceMin},${this._enragedChanceMax}], # to enrage: [${this._numToEnrageMin},${this._numToEnrageMax}] -> picked ${numToEnrage}`);
 
-      for (let i = 0; i < numToEnrage; i++) {
-        const enrageChanceThreshold = rand.floating(this._enragedChanceMin, this._enragedChanceMax);
-        const enrageChance = rand.next();
-        Logger.getInstance().info(`..enraged attempt #${i + 1}: ${enrageChanceThreshold}, rolled ${enrageChance} -> ${(enrageChance <= enrageChanceThreshold ? 'enraging!' : 'staying calm')}`);
-
-        if (enrageChance <= enrageChanceThreshold) {
-          if (availableEnemies.length === 0) {
-            Logger.getInstance().info(`....nobody left to enrage`);
-            break;
-          }
-
-          const toEnrageIdx = rand.integer(0, availableEnemies.length - 1);
-          availableEnemies[toEnrageIdx].enraged = true;
-          Logger.getInstance().info(`....chose enemy with id ${availableEnemies[toEnrageIdx].id} to enrage`);
-          availableEnemies.splice(toEnrageIdx, 1);
-        }
-      }
+      this.tryEnrageEnemies(numToEnrage, this._enragedChanceMin, this._enragedChanceMax);
     });
   }
 
-  addEnemies(layer: ObjectLayer) {
+  protected tryEnrageEnemies(numToEnrage: number, enragedChanceMin: number, enragedChanceMax: number) {
+    let availableEnemies = this.cells.filter(c => c.occupant instanceof EnemyCharacter && !(c.occupant as EnemyCharacter).enraged).map(c => c.occupant as EnemyCharacter);
+    for (let i = 0; i < numToEnrage; i++) {
+      const enrageChanceThreshold = rand.floating(enragedChanceMin, enragedChanceMax);
+      const enrageChance = rand.next();
+      Logger.getInstance().info(`..enraged attempt #${i + 1}: ${enrageChanceThreshold}, rolled ${enrageChance} -> ${(enrageChance <= enrageChanceThreshold ? 'enraging!' : 'staying calm')}`);
+
+      if (enrageChance <= enrageChanceThreshold) {
+        if (availableEnemies.length === 0) {
+          Logger.getInstance().info(`....nobody left to enrage`);
+          break;
+        }
+
+        const toEnrageIdx = rand.integer(0, availableEnemies.length - 1);
+        availableEnemies[toEnrageIdx].enraged = true;
+        Logger.getInstance().info(`....chose enemy with id ${availableEnemies[toEnrageIdx].id} to enrage`);
+        availableEnemies.splice(toEnrageIdx, 1);
+      }
+    }
+  }
+
+  protected addEnemies(layer: ObjectLayer) {
     const enemies = layer.getObjectsByName("enemy");
     if (!enemies) {
       throw Error(`cannot find "enemy".`);
@@ -257,7 +264,7 @@ export class GameScene extends Scene {
     }
   }
 
-  addExit(layer: ObjectLayer) {
+  protected addExit(layer: ObjectLayer) {
     const exit = layer.getObjectsByName('exit');
     if (!exit || exit.length != 1) {
       throw Error(`cannot find "exit".`);
@@ -280,7 +287,7 @@ export class GameScene extends Scene {
     this.add(this._exit!);
   }
 
-  addCell(x: number, y: number, width: number, height: number): Cell {
+  protected addCell(x: number, y: number, width: number, height: number): Cell {
     let cell = new Cell({
       name: `cell-${x}-${y}`,
       x: x + (width / 2),
@@ -301,7 +308,7 @@ export class GameScene extends Scene {
     return cell;
   }
 
-  private spawnEnemy(c: Cell) {
+  protected spawnEnemy(c: Cell) {
     this._enemyCounter++;
 
     const enemy = new EnemyCharacter({
@@ -361,7 +368,7 @@ export class GameScene extends Scene {
     }
   }
 
-  public slideOccupantToNewCell(source: Cell, target: Cell) {
+  protected slideOccupantToNewCell(source: Cell, target: Cell) {
     const moveDuration = 250;
 
     // todo: pick an appropriate speed. this feels _okay_, but not great.

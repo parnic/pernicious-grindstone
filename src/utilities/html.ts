@@ -32,4 +32,8 @@ export class html {
         elem.classList.remove('show');
         elem.classList.add('hide');
     }
+
+    static elementIsVisible(elem: HTMLElement) {
+        return !elem.classList.contains('hide');
+    }
 }
