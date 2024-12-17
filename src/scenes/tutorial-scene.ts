@@ -28,15 +28,18 @@ export class TutorialScene extends GameScene {
 
         this.goNextTutorialPhase();
 
-        engine.input.pointers.primary.on('down', () => {
-            if (html.elementIsVisible(this._tutorialElement)) {
-                html.hideElement(this._tutorialElement);
-            }
-        });
+        document.addEventListener('click', () => this.onClick());
+        engine.input.pointers.primary.on('down', () => this.onClick());
 
         this.player!.on(PlayerEvents.NextTurnStarted, () => this.goNextTutorialPhase());
 
         this.events.once(GameSceneEvents.TargetScoreReached, () => this.notifyDoorOpen());
+    }
+
+    private onClick() {
+        if (html.elementIsVisible(this._tutorialElement)) {
+            html.hideElement(this._tutorialElement);
+        }
     }
 
     private goNextTutorialPhase() {
