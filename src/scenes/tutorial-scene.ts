@@ -19,6 +19,8 @@ export class TutorialScene extends GameScene {
 
     private readonly _tutorialExitOpenMessage = "The exit is open! Move onto the exit to finish the level!"
 
+    private readonly _seenTutorialKey = 'seenTutorial';
+
     private _tutorialElement: HTMLElement;
     _showTutorial: boolean = true;
 
@@ -29,6 +31,9 @@ export class TutorialScene extends GameScene {
 
         if (config?.showTutorial !== undefined) {
             this._showTutorial = config.showTutorial;
+        }
+        if (localStorage.getItem(this._seenTutorialKey)) {
+            this._showTutorial = false;
         }
     }
 
@@ -48,6 +53,7 @@ export class TutorialScene extends GameScene {
 
     onDeactivate(context: SceneActivationContext): void {
         html.hideElement(this._tutorialElement);
+        localStorage.setItem(this._seenTutorialKey, 'true');
     }
 
     private onClick() {
