@@ -7,6 +7,7 @@ export class Audio {
     private static currBgmIdx = 0;
 
     static MusicVolume = 0.6;
+    static EnemyImpactSfxVolume = 0.5;
     static ImpactSfxVolume = 1.0;
     static ExitSfxVolume = 0.4;
     static SelectedSfxVolume = 0.4;
@@ -29,6 +30,10 @@ export class Audio {
 
     static playImpactSfx() {
         SfxResources.impacts[rand.integer(0, SfxResources.impacts.length - 1)].play(this.ImpactSfxVolume);
+    }
+
+    static playEnemyImpactSfx() {
+        SfxResources.enemyImpacts[rand.integer(0, SfxResources.enemyImpacts.length - 1)].play(this.EnemyImpactSfxVolume);
     }
 
     static playExitSfx() {

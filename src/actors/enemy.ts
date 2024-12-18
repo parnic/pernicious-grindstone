@@ -406,7 +406,7 @@ export class EnemyCharacter extends Actor implements Hoverable, CellOccupant {
 
     onPreKill(_scene: Scene): void {
         spawnDieEffect(this, _scene);
-        Audio.playImpactSfx();
+        Audio.playEnemyImpactSfx();
     }
 
     onPostKill(_scene: Scene): void {

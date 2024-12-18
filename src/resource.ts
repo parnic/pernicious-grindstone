@@ -68,6 +68,16 @@ import enemyEnragedSfx08 from '../sound/sfx/enrage/enrage08.wav'
 import enemyEnragedSfx09 from '../sound/sfx/enrage/enrage09.wav'
 import enemyEnragedSfx10 from '../sound/sfx/enrage/enrage10.wav'
 
+import enemyImpactSfx01 from '../sound/sfx/impacts/HKAP2 Seq2.13 Hit 1a.wav'
+import enemyImpactSfx02 from '../sound/sfx/impacts/HKAP2 Seq2.13 Hit 1b.wav'
+import enemyImpactSfx03 from '../sound/sfx/impacts/HKAP2 Seq2.13 Hit 1c.wav'
+import enemyImpactSfx04 from '../sound/sfx/impacts/Seq 2.1 Hit 1 96 HK1.wav'
+import enemyImpactSfx05 from '../sound/sfx/impacts/Seq 2.1 Hit 2 96 HK1.wav'
+import enemyImpactSfx06 from '../sound/sfx/impacts/Seq 2.1 Hit 3 96 HK1.wav'
+import enemyImpactSfx07 from '../sound/sfx/impacts/Seq 2.27 Hit 1 96 HK1.wav'
+import enemyImpactSfx08 from '../sound/sfx/impacts/Seq1.15 Hit 1 96 HK1.wav'
+import enemyImpactSfx09 from '../sound/sfx/impacts/Seq1.15 Hit 3 96 HK1.wav'
+
 import bgm01 from '../sound/music/chip-mode-danijel-zambo-main-version-1431-02-05.mp3'
 import bgm02 from '../sound/music/game-over-danijel-zambo-main-version-1394-02-03.mp3'
 import bgm03 from '../sound/music/itty-bitty-8-bit-kevin-macleod-main-version-7983-03-13.mp3'
@@ -127,6 +137,17 @@ export const SfxResources = {
     new Sound(impactSfx02),
     new Sound(impactSfx03),
     new Sound(impactSfx04),
+  ],
+  enemyImpacts: [
+    new Sound(enemyImpactSfx01),
+    new Sound(enemyImpactSfx02),
+    new Sound(enemyImpactSfx03),
+    new Sound(enemyImpactSfx04),
+    new Sound(enemyImpactSfx05),
+    new Sound(enemyImpactSfx06),
+    new Sound(enemyImpactSfx07),
+    new Sound(enemyImpactSfx08),
+    new Sound(enemyImpactSfx09),
   ],
   reachedExit: [
     new Sound(reachedExitSfx),
