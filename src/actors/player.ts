@@ -296,7 +296,7 @@ export class PlayerCharacter extends Actor implements CellOccupant {
 
         this.going = true;
 
-        const moveDurationMax = 350;
+        const moveDurationMax = 200;
         const moveDurationMin = 60;
         const delayMin = 50;
 
@@ -331,7 +331,7 @@ export class PlayerCharacter extends Actor implements CellOccupant {
             moveChain = moveChain.callMethod(() => this.scene!.camera.shake(rand.integer(shakeXMin, shakeXMax), rand.integer(0, 2), delay));
 
             delay = Math.max(delayMin, delay * 0.85);
-            moveDuration = Math.max(moveDurationMin, moveDuration * 0.85);
+            moveDuration = Math.max(moveDurationMin, moveDuration * 0.9);
         }
 
         if (this.pathTail.occupant instanceof Exit) {
