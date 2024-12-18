@@ -57,6 +57,17 @@ import cellSelectedSfx20 from '../sound/sfx/ui/select20.wav'
 import cellSelectedSfx21 from '../sound/sfx/ui/select21.wav'
 import cellSelectedSfx22 from '../sound/sfx/ui/select22.wav'
 
+import enemyEnragedSfx01 from '../sound/sfx/enrage/enrage01.wav'
+import enemyEnragedSfx02 from '../sound/sfx/enrage/enrage02.wav'
+import enemyEnragedSfx03 from '../sound/sfx/enrage/enrage03.wav'
+import enemyEnragedSfx04 from '../sound/sfx/enrage/enrage04.wav'
+import enemyEnragedSfx05 from '../sound/sfx/enrage/enrage05.wav'
+import enemyEnragedSfx06 from '../sound/sfx/enrage/enrage06.wav'
+import enemyEnragedSfx07 from '../sound/sfx/enrage/enrage07.wav'
+import enemyEnragedSfx08 from '../sound/sfx/enrage/enrage08.wav'
+import enemyEnragedSfx09 from '../sound/sfx/enrage/enrage09.wav'
+import enemyEnragedSfx10 from '../sound/sfx/enrage/enrage10.wav'
+
 import bgm01 from '../sound/music/chip-mode-danijel-zambo-main-version-1431-02-05.mp3'
 import bgm02 from '../sound/music/game-over-danijel-zambo-main-version-1394-02-03.mp3'
 import bgm03 from '../sound/music/itty-bitty-8-bit-kevin-macleod-main-version-7983-03-13.mp3'
@@ -143,6 +154,18 @@ export const SfxResources = {
     new Sound(cellSelectedSfx20),
     new Sound(cellSelectedSfx21),
     new Sound(cellSelectedSfx22),
+  ],
+  enemyEnraged: [
+    new Sound(enemyEnragedSfx01),
+    new Sound(enemyEnragedSfx02),
+    new Sound(enemyEnragedSfx03),
+    new Sound(enemyEnragedSfx04),
+    new Sound(enemyEnragedSfx05),
+    new Sound(enemyEnragedSfx06),
+    new Sound(enemyEnragedSfx07),
+    new Sound(enemyEnragedSfx08),
+    new Sound(enemyEnragedSfx09),
+    new Sound(enemyEnragedSfx10),
   ],
   bgm: [
     new Sound(bgm01),

@@ -256,7 +256,9 @@ export class GameScene extends Scene {
   }
 
   protected tryEnrageEnemies(numToEnrage: number, enragedChanceMin: number, enragedChanceMax: number) {
-    let availableEnemies = this.cells.filter(c => c.occupant instanceof EnemyCharacter && !(c.occupant as EnemyCharacter).enraged).map(c => c.occupant as EnemyCharacter);
+    let availableEnemies = this.cells.filter(c => c.occupant instanceof EnemyCharacter && !(c.occupant as EnemyCharacter).enraged && !(c.occupant as EnemyCharacter).isKilled()).map(c => c.occupant as EnemyCharacter);
+    let moveChain = this.player!.actions.delay(0);
+    let numEnraged = 0;
     for (let i = 0; i < numToEnrage; i++) {
       const enrageChanceThreshold = rand.floating(enragedChanceMin, enragedChanceMax);
       const enrageChance = rand.next();
@@ -269,8 +271,16 @@ export class GameScene extends Scene {
         }
 
         const toEnrageIdx = rand.integer(0, availableEnemies.length - 1);
-        availableEnemies[toEnrageIdx].enraged = true;
-        Audio.playEnemyEnragedSfx();
+        if (numEnraged > 0) {
+          moveChain = moveChain.delay(300);
+        }
+        let toEnrage = availableEnemies[toEnrageIdx];
+        moveChain = moveChain.callMethod(() => {
+          toEnrage.enraged = true;
+          Audio.playEnemyEnragedSfx();
+        });
+
+        numEnraged++;
         Logger.getInstance().info(`....chose enemy with id ${availableEnemies[toEnrageIdx].id} to enrage`);
         availableEnemies.splice(toEnrageIdx, 1);
       }

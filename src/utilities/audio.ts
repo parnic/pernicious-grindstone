@@ -10,6 +10,7 @@ export class Audio {
     static ImpactSfxVolume = 1.0;
     static ExitSfxVolume = 0.4;
     static SelectedSfxVolume = 0.4;
+    static EnemyEnragedSfxVolume = 0.4;
 
     static init() {
         for (let i = 0; i < SfxResources.bgm.length; i++) {
@@ -39,6 +40,10 @@ export class Audio {
     }
 
     static playEnemyEnragedSfx() {
+        SfxResources.enemyEnraged[rand.integer(0, SfxResources.enemyEnraged.length - 1)].play(this.EnemyEnragedSfxVolume);
+    }
+
+    static playExitOpenedSfx() {
         // NYI
     }
 }
