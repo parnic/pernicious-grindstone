@@ -55,8 +55,8 @@ export class Audio {
     }
 
     static playMusic() {
-        this.playSound(SfxResources.bgm[this.currBgmIdx], this.MusicVolume);
         this.currBgmOrderIdx++;
+        this.playSound(SfxResources.bgm[this.currBgmIdx], this.MusicVolume);
     }
 
     static playImpactSfx() {
