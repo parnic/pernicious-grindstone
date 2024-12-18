@@ -134,12 +134,19 @@ export class PlayerCharacter extends Actor implements CellOccupant {
         return false;
     }
 
+    private _goClickHandler = () => this.go();
+
+    onAdd(engine: Engine): void {
+        this.goButton.addEventListener('click', this._goClickHandler);
+    }
+
+    onRemove(engine: Engine): void {
+        this.goButton.removeEventListener('click', this._goClickHandler)
+    }
+
     public onInitialize(_engine: Engine): void {
         this.graphics.use(ResourceManager.getPlayerSprite());
 
-        this.goButton.addEventListener('click', () => {
-            this.go();
-        });
         html.unhideElement(this.goButton);
 
         html.unhideElement(this.scoreRoot);

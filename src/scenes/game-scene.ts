@@ -1,4 +1,4 @@
-import { CollisionType, Color, EasingFunctions, Engine, EventEmitter, GameEvent, Logger, Scene, SceneEvents, Vector } from "excalibur";
+import { CollisionType, Color, EasingFunctions, Engine, EventEmitter, GameEvent, Logger, Scene, SceneActivationContext, SceneEvents, Vector } from "excalibur";
 import { EnemyCharacter } from "../actors/enemy";
 import { rand } from "../utilities/math";
 import { PlayerCharacter, PlayerEvents, TurnEndedEvent } from "../actors/player";
@@ -95,6 +95,10 @@ export class GameScene extends Scene {
   protected _enemyCounter: number = 0;
   protected _availableEnemyTypes: number[] = [0, 1, 2];
 
+  private _restartClickHandler = () => {
+    SceneManager.goToScene(SceneManager.getFirstSceneData(), this.engine, SceneManager.getCurrentSceneData(this.engine));
+  };
+
   constructor(map: TiledResource) {
     super();
 
@@ -105,6 +109,18 @@ export class GameScene extends Scene {
     this.btnRestart = document.getElementsByClassName('btn-restart');
 
     this._map = map;
+  }
+
+  onActivate(context: SceneActivationContext<unknown>): void {
+    for (let i = 0; i < this.btnRestart.length; i++) {
+      this.btnRestart.item(i)!.addEventListener('click', this._restartClickHandler);
+    }
+  }
+
+  onDeactivate(context: SceneActivationContext): void {
+    for (let i = 0; i < this.btnRestart.length; i++) {
+      this.btnRestart.item(i)!.removeEventListener('click', this._restartClickHandler);
+    }
   }
 
   onInitialize(engine: Engine): void {
@@ -170,12 +186,6 @@ export class GameScene extends Scene {
     this.events.on(GameSceneEvents.CompleteStage, () => {
       SceneManager.goToNextScene(this.engine);
     });
-
-    for (let i = 0; i < this.btnRestart.length; i++) {
-      this.btnRestart.item(i)!.addEventListener('click', () => {
-        SceneManager.goToScene(SceneManager.getFirstSceneData(), this.engine, SceneManager.getCurrentSceneData(this.engine));
-      });
-    }
   }
 
   protected onPointerMove(pointerPos: Vector, fromMoveEvent: boolean = false) {

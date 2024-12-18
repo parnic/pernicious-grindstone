@@ -22,7 +22,9 @@ export class TutorialScene extends GameScene {
     private readonly _seenTutorialKey = 'seenTutorial';
 
     private _tutorialElement: HTMLElement;
-    _showTutorial: boolean = true;
+    private _showTutorial: boolean = true;
+
+    private _onClickHandler = () => this.onClick();
 
     constructor(map: TiledResource, config?: TutorialSceneConfigArgs) {
         super(map);
@@ -38,12 +40,14 @@ export class TutorialScene extends GameScene {
     }
 
     onActivate(context: SceneActivationContext<unknown>): void {
+        super.onActivate(context);
+
         if (!this._showTutorial) {
             return;
         }
 
-        document.addEventListener('click', () => this.onClick());
-        this.engine.input.pointers.primary.on('down', () => this.onClick());
+        document.addEventListener('click', this._onClickHandler);
+        this.engine.input.pointers.primary.on('down', this._onClickHandler);
 
         this.player!.on(PlayerEvents.NextTurnStarted, () => this.goNextTutorialPhase());
         this.events.once(GameSceneEvents.TargetScoreReached, () => this.notifyDoorOpen());
@@ -52,6 +56,9 @@ export class TutorialScene extends GameScene {
     }
 
     onDeactivate(context: SceneActivationContext): void {
+        super.onDeactivate(context);
+
+        document.removeEventListener('click', this._onClickHandler);
         html.hideElement(this._tutorialElement);
         localStorage.setItem(this._seenTutorialKey, 'true');
     }
