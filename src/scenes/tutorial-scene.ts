@@ -12,7 +12,7 @@ export class TutorialScene extends GameScene {
     private _tutorialPhase = -1;
 
     private readonly _tutorialSteps = [
-        'Starting at the 💣, select a chain of like-colored adjacent enemies, then press Go to attack.',
+        'Starting at the 💣, build a chain of like-colored adjacent enemies, then press Go to attack.',
         'Each enemy is worth one point. Once you reach the target score shown above, the exit door will open.',
         "Uh oh, an enemy is angry! Attack or avoid angry enemies. If you end your chain next to an angry enemy, you lose a heart. Lose all your hearts and it's game over!",
     ];
