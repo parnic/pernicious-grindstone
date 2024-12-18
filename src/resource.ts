@@ -23,6 +23,7 @@ import stage01Path from '../res/stage-01.tmx';
 import stage02Path from '../res/stage-02.tmx';
 import stage03Path from '../res/stage-03.tmx';
 import spriteSheet from '../img/kenney-pixel-shmup/tiles_packed.png';
+import itemsSpriteSheet from '../img/platformPack_tilesheet.png'
 import tsxPath from '../res/kenney-pixel-shmup.tsx';
 
 import SilkscreenFont from './fonts/Silkscreen-Regular.ttf';
@@ -107,6 +108,7 @@ export const Resources = {
     ]
   }),
   spritesheet: new ImageSource(spriteSheet),
+  itemsSpriteSheet: new ImageSource(itemsSpriteSheet),
   PixelFont: new FontSource(SilkscreenFont, 'Silkscreen')
 };
 
