@@ -43,6 +43,7 @@ export class PlayerCharacter extends Actor implements CellOccupant {
     private willScoreVal: HTMLElement;
     private scoreRoot: HTMLElement;
     private scoreVal: HTMLElement;
+    private uiRoot: HTMLElement;
     private goButton: HTMLElement;
     private targetScoreGroup: HTMLElement;
     private scoreTextGroup: HTMLElement;
@@ -124,6 +125,7 @@ export class PlayerCharacter extends Actor implements CellOccupant {
         this.willScoreVal = document.getElementById('pathScore')!;
         this.scoreRoot = document.getElementById('playerInfoElement')!;
         this.scoreVal = document.getElementById('score')!;
+        this.uiRoot = document.getElementById('uiRoot')!;
         this.goButton = document.getElementById('btnGo')!;
         this.targetScoreGroup = document.getElementById('targetScoreGroup')!;
         this.scoreTextGroup = document.getElementById('scoreText')!;
@@ -147,7 +149,7 @@ export class PlayerCharacter extends Actor implements CellOccupant {
     public onInitialize(_engine: Engine): void {
         this.graphics.use(ResourceManager.getPlayerSprite());
 
-        html.unhideElement(this.goButton);
+        html.unhideElement(this.uiRoot);
 
         html.unhideElement(this.scoreRoot);
 

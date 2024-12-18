@@ -48,6 +48,7 @@ export class GameScene extends Scene {
   private youWinElement: HTMLElement;
   private healthDepletedElement: HTMLElement;
   private btnRestart: HTMLCollectionOf<Element>;
+  private rangeVolume: HTMLInputElement;
 
   private readonly _enemyRefillDurationMs = 600;
   public get enemyRefillDurationMs() {
@@ -99,6 +100,11 @@ export class GameScene extends Scene {
     SceneManager.goToScene(SceneManager.getFirstSceneData(), this.engine, SceneManager.getCurrentSceneData(this.engine));
   };
 
+  private _volumeSliderChangeHandler = (evt: Event) => {
+    Audio.MasterVolumeMultiplier = parseInt(this.rangeVolume.value) / 100;
+    localStorage.setItem('volume', this.rangeVolume.value);
+  };
+
   constructor(map: TiledResource) {
     super();
 
@@ -107,6 +113,7 @@ export class GameScene extends Scene {
     this.youWinElement = document.getElementById('youWinElement')!;
     this.healthDepletedElement = document.getElementById('healthDepletedElement')!;
     this.btnRestart = document.getElementsByClassName('btn-restart');
+    this.rangeVolume = (document.getElementById('volume-slider') as HTMLInputElement)!;
 
     this._map = map;
   }
@@ -115,12 +122,16 @@ export class GameScene extends Scene {
     for (let i = 0; i < this.btnRestart.length; i++) {
       this.btnRestart.item(i)!.addEventListener('click', this._restartClickHandler);
     }
+
+    this.rangeVolume.addEventListener('input', this._volumeSliderChangeHandler);
   }
 
   onDeactivate(context: SceneActivationContext): void {
     for (let i = 0; i < this.btnRestart.length; i++) {
       this.btnRestart.item(i)!.removeEventListener('click', this._restartClickHandler);
     }
+
+    this.rangeVolume.removeEventListener('input', this._volumeSliderChangeHandler);
   }
 
   onInitialize(engine: Engine): void {

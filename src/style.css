@@ -76,6 +76,10 @@ body {
   margin: 1rem;
 }
 
+.mt-3 {
+  margin-top: 1rem;
+}
+
 .text-align-right {
   text-align: right;
 }
@@ -173,4 +177,8 @@ button:disabled {
 
 .red-shadow {
   text-shadow: -2px -2px 0.5rem #f00, 2px -2px 0.5rem #f00, -2px 2px 0.5rem #f00, 2px 2px 0.5rem #f00;
+}
+
+#volume-slider {
+  width: 4rem;
 }

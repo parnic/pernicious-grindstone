@@ -1,20 +1,34 @@
+import { Sound } from "excalibur";
 import { SfxResources } from "../resource";
 import { shuffle } from "./array";
 import { rand } from "./math";
 
 export class Audio {
     private static bgmOrder: number[] = [];
-    private static currBgmIdx = 0;
+    private static currBgmOrderIdx = 0;
 
-    static MusicVolume = 0.6;
-    static EnemyImpactSfxVolume = 0.5;
-    static ImpactSfxVolume = 1.0;
-    static ExitSfxVolume = 0.4;
-    static SelectedSfxVolume = 0.4;
-    static EnemyEnragedSfxVolume = 0.4;
-    static ExitOpenSfxVolume = 1.0;
+    private static get currBgmIdx(): number {
+        return this.bgmOrder[this.currBgmOrderIdx % this.bgmOrder.length];
+    }
 
-    static MasterVolumeMultiplier = 1.0;
+    private static readonly MusicVolume = 0.6;
+    private static readonly EnemyImpactSfxVolume = 0.5;
+    private static readonly ImpactSfxVolume = 1.0;
+    private static readonly ExitSfxVolume = 0.4;
+    private static readonly SelectedSfxVolume = 0.4;
+    private static readonly EnemyEnragedSfxVolume = 0.4;
+    private static readonly ExitOpenSfxVolume = 1.0;
+
+    private static _rangeVolume: HTMLInputElement;
+
+    static _masterVolumeMultiplier = 1.0;
+    static get MasterVolumeMultiplier() {
+        return this._masterVolumeMultiplier;
+    }
+    static set MasterVolumeMultiplier(_volume: number) {
+        this._masterVolumeMultiplier = _volume;
+        SfxResources.bgm[this.currBgmIdx].volume = this.MusicVolume * this.MasterVolumeMultiplier;
+    }
 
     static init() {
         for (let i = 0; i < SfxResources.bgm.length; i++) {
@@ -22,36 +36,50 @@ export class Audio {
         }
 
         shuffle(this.bgmOrder);
+
+        this._rangeVolume = (document.getElementById('volume-slider') as HTMLInputElement)!;
+        let vol = localStorage.getItem('volume');
+        if (vol) {
+            this._rangeVolume.value = vol;
+            this.MasterVolumeMultiplier = parseInt(vol) / 100;
+        }
+
+        for (const bgm of SfxResources.bgm) {
+            bgm.on('playbackend', () => this.playMusic());
+        }
+    }
+
+    private static playSound(snd: Sound, volume: number) {
+        snd.volume = volume * this.MasterVolumeMultiplier;
+        snd.play();
     }
 
     static playMusic() {
-        const idx = this.bgmOrder[this.currBgmIdx % this.bgmOrder.length];
-        SfxResources.bgm[idx].once('playbackend', () => this.playMusic());
-        SfxResources.bgm[idx].play(this.MusicVolume);
-        this.currBgmIdx++;
+        this.playSound(SfxResources.bgm[this.currBgmIdx], this.MusicVolume);
+        this.currBgmOrderIdx++;
     }
 
     static playImpactSfx() {
-        SfxResources.impacts[rand.integer(0, SfxResources.impacts.length - 1)].play(this.ImpactSfxVolume * this.MasterVolumeMultiplier);
+        this.playSound(SfxResources.impacts[rand.integer(0, SfxResources.impacts.length - 1)], this.ImpactSfxVolume);
     }
 
     static playEnemyImpactSfx() {
-        SfxResources.enemyImpacts[rand.integer(0, SfxResources.enemyImpacts.length - 1)].play(this.EnemyImpactSfxVolume * this.MasterVolumeMultiplier);
+        this.playSound(SfxResources.enemyImpacts[rand.integer(0, SfxResources.enemyImpacts.length - 1)], this.EnemyImpactSfxVolume);
     }
 
     static playExitSfx() {
-        SfxResources.reachedExit[rand.integer(0, SfxResources.reachedExit.length - 1)].play(this.ExitSfxVolume * this.MasterVolumeMultiplier);
+        this.playSound(SfxResources.reachedExit[rand.integer(0, SfxResources.reachedExit.length - 1)], this.ExitSfxVolume);
     }
 
     static playSelectedSfx(num: number) {
-        SfxResources.cellSelected[Math.min(num, SfxResources.cellSelected.length - 1)].play(this.SelectedSfxVolume * this.MasterVolumeMultiplier);
+        this.playSound(SfxResources.cellSelected[Math.min(num, SfxResources.cellSelected.length - 1)], this.SelectedSfxVolume);
     }
 
     static playEnemyEnragedSfx() {
-        SfxResources.enemyEnraged[rand.integer(0, SfxResources.enemyEnraged.length - 1)].play(this.EnemyEnragedSfxVolume * this.MasterVolumeMultiplier);
+        this.playSound(SfxResources.enemyEnraged[rand.integer(0, SfxResources.enemyEnraged.length - 1)], this.EnemyEnragedSfxVolume);
     }
 
     static playExitOpenedSfx() {
-        SfxResources.exitOpen[rand.integer(0, SfxResources.exitOpen.length - 1)].play(this.ExitOpenSfxVolume * this.MasterVolumeMultiplier);
+        this.playSound(SfxResources.exitOpen[rand.integer(0, SfxResources.exitOpen.length - 1)], this.ExitOpenSfxVolume);
     }
 }
