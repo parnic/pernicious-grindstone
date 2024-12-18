@@ -199,8 +199,6 @@ export class PlayerCharacter extends Actor implements CellOccupant {
     }
 
     public select(enemy?: EnemyCharacter) {
-        Audio.playSelectedSfx();
-
         if (enemy instanceof PlayerCharacter) {
             for (let c of this.path) {
                 if (isHoverable(c.occupant)) {
@@ -209,6 +207,7 @@ export class PlayerCharacter extends Actor implements CellOccupant {
             }
 
             this.path.length = 0;
+            Audio.playSelectedSfx(this.path.length);
             this.updateScoreUi();
             return;
         }
@@ -229,6 +228,7 @@ export class PlayerCharacter extends Actor implements CellOccupant {
                 }
             }
             this.updateScoreUi();
+            Audio.playSelectedSfx(this.path.length);
             return;
         }
 
@@ -236,6 +236,7 @@ export class PlayerCharacter extends Actor implements CellOccupant {
         enemy!.pointerdown();
 
         this.updateScoreUi();
+        Audio.playSelectedSfx(this.path.length);
     }
 
     private updateScoreUi() {

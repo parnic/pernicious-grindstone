@@ -8,8 +8,8 @@ export class Audio {
 
     static MusicVolume = 0.6;
     static ImpactSfxVolume = 1.0;
-    static ExitSfxVolume = 0.5;
-    static SelectedSfxVolume = 1.0;
+    static ExitSfxVolume = 0.4;
+    static SelectedSfxVolume = 0.4;
 
     static init() {
         for (let i = 0; i < SfxResources.bgm.length; i++) {
@@ -34,8 +34,8 @@ export class Audio {
         SfxResources.reachedExit[rand.integer(0, SfxResources.reachedExit.length - 1)].play(this.ExitSfxVolume);
     }
 
-    static playSelectedSfx() {
-        SfxResources.cellSelected[rand.integer(0, SfxResources.cellSelected.length - 1)].play(this.SelectedSfxVolume);
+    static playSelectedSfx(num: number) {
+        SfxResources.cellSelected[Math.min(num, SfxResources.cellSelected.length - 1)].play(this.SelectedSfxVolume);
     }
 
     static playEnemyEnragedSfx() {

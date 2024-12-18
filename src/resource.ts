@@ -34,7 +34,28 @@ import impactSfx04 from '../sound/sfx/impacts/zapsplat_impacts_body_hit_punch_or
 
 import reachedExitSfx from '../sound/sfx/ui/mixkit-game-bonus-reached-2065.wav'
 
-import cellSelectedSfx01 from '../sound/sfx/ui/mixkit-game-ball-tap-2073.wav'
+import cellSelectedSfx01 from '../sound/sfx/ui/select01.wav'
+import cellSelectedSfx02 from '../sound/sfx/ui/select02.wav'
+import cellSelectedSfx03 from '../sound/sfx/ui/select03.wav'
+import cellSelectedSfx04 from '../sound/sfx/ui/select04.wav'
+import cellSelectedSfx05 from '../sound/sfx/ui/select05.wav'
+import cellSelectedSfx06 from '../sound/sfx/ui/select06.wav'
+import cellSelectedSfx07 from '../sound/sfx/ui/select07.wav'
+import cellSelectedSfx08 from '../sound/sfx/ui/select08.wav'
+import cellSelectedSfx09 from '../sound/sfx/ui/select09.wav'
+import cellSelectedSfx10 from '../sound/sfx/ui/select10.wav'
+import cellSelectedSfx11 from '../sound/sfx/ui/select11.wav'
+import cellSelectedSfx12 from '../sound/sfx/ui/select12.wav'
+import cellSelectedSfx13 from '../sound/sfx/ui/select13.wav'
+import cellSelectedSfx14 from '../sound/sfx/ui/select14.wav'
+import cellSelectedSfx15 from '../sound/sfx/ui/select15.wav'
+import cellSelectedSfx16 from '../sound/sfx/ui/select16.wav'
+import cellSelectedSfx17 from '../sound/sfx/ui/select17.wav'
+import cellSelectedSfx18 from '../sound/sfx/ui/select18.wav'
+import cellSelectedSfx19 from '../sound/sfx/ui/select19.wav'
+import cellSelectedSfx20 from '../sound/sfx/ui/select20.wav'
+import cellSelectedSfx21 from '../sound/sfx/ui/select21.wav'
+import cellSelectedSfx22 from '../sound/sfx/ui/select22.wav'
 
 import bgm01 from '../sound/music/chip-mode-danijel-zambo-main-version-1431-02-05.mp3'
 import bgm02 from '../sound/music/game-over-danijel-zambo-main-version-1394-02-03.mp3'
@@ -101,6 +122,27 @@ export const SfxResources = {
   ],
   cellSelected: [
     new Sound(cellSelectedSfx01),
+    new Sound(cellSelectedSfx02),
+    new Sound(cellSelectedSfx03),
+    new Sound(cellSelectedSfx04),
+    new Sound(cellSelectedSfx05),
+    new Sound(cellSelectedSfx06),
+    new Sound(cellSelectedSfx07),
+    new Sound(cellSelectedSfx08),
+    new Sound(cellSelectedSfx09),
+    new Sound(cellSelectedSfx10),
+    new Sound(cellSelectedSfx11),
+    new Sound(cellSelectedSfx12),
+    new Sound(cellSelectedSfx13),
+    new Sound(cellSelectedSfx14),
+    new Sound(cellSelectedSfx15),
+    new Sound(cellSelectedSfx16),
+    new Sound(cellSelectedSfx17),
+    new Sound(cellSelectedSfx18),
+    new Sound(cellSelectedSfx19),
+    new Sound(cellSelectedSfx20),
+    new Sound(cellSelectedSfx21),
+    new Sound(cellSelectedSfx22),
   ],
   bgm: [
     new Sound(bgm01),
