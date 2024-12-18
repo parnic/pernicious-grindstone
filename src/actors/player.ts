@@ -135,16 +135,7 @@ export class PlayerCharacter extends Actor implements CellOccupant {
     }
 
     public onInitialize(_engine: Engine): void {
-        const body = new Actor({
-            name: `player-body`,
-            z: this.z,
-            width: this.width - 2,
-            height: this.height - 2,
-            collisionType: CollisionType.PreventCollision,
-        });
-        body.graphics.use(ResourceManager.getPlayerSprite());
-
-        this.addChild(body);
+        this.graphics.use(ResourceManager.getPlayerSprite());
 
         this.goButton.addEventListener('click', () => {
             this.go();
@@ -358,11 +349,12 @@ export class PlayerCharacter extends Actor implements CellOccupant {
                 let moveChain = this.actions.delay(0);
                 if (t.numAttacks > 0) {
                     this.health -= t.numAttacks;
+                    Audio.playImpactSfx();
                     if (this.health > 0) {
                         // todo: this isn't working. find a damage effect that looks good.
                         moveChain = moveChain.repeat(ctx => {
-                            ctx.flash(Color.Red, 100).delay(100);
-                        }, 6);
+                            ctx.flash(Color.White, 50).delay(50);
+                        }, 4);
                     }
                 }
 
