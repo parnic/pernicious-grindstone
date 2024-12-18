@@ -277,6 +277,7 @@ export class PlayerCharacter extends Actor implements CellOccupant {
 
         if (this._score >= this.gameScene.targetScore && prevScore < this.gameScene.targetScore) {
             this.gameScene.events.emit(GameSceneEvents.TargetScoreReached, new TargetScoreReachedEvent(this._score));
+            Audio.playExitOpenedSfx();
         }
     }
 

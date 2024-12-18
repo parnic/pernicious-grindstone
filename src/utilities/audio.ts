@@ -12,6 +12,9 @@ export class Audio {
     static ExitSfxVolume = 0.4;
     static SelectedSfxVolume = 0.4;
     static EnemyEnragedSfxVolume = 0.4;
+    static ExitOpenSfxVolume = 1.0;
+
+    static MasterVolumeMultiplier = 1.0;
 
     static init() {
         for (let i = 0; i < SfxResources.bgm.length; i++) {
@@ -29,26 +32,26 @@ export class Audio {
     }
 
     static playImpactSfx() {
-        SfxResources.impacts[rand.integer(0, SfxResources.impacts.length - 1)].play(this.ImpactSfxVolume);
+        SfxResources.impacts[rand.integer(0, SfxResources.impacts.length - 1)].play(this.ImpactSfxVolume * this.MasterVolumeMultiplier);
     }
 
     static playEnemyImpactSfx() {
-        SfxResources.enemyImpacts[rand.integer(0, SfxResources.enemyImpacts.length - 1)].play(this.EnemyImpactSfxVolume);
+        SfxResources.enemyImpacts[rand.integer(0, SfxResources.enemyImpacts.length - 1)].play(this.EnemyImpactSfxVolume * this.MasterVolumeMultiplier);
     }
 
     static playExitSfx() {
-        SfxResources.reachedExit[rand.integer(0, SfxResources.reachedExit.length - 1)].play(this.ExitSfxVolume);
+        SfxResources.reachedExit[rand.integer(0, SfxResources.reachedExit.length - 1)].play(this.ExitSfxVolume * this.MasterVolumeMultiplier);
     }
 
     static playSelectedSfx(num: number) {
-        SfxResources.cellSelected[Math.min(num, SfxResources.cellSelected.length - 1)].play(this.SelectedSfxVolume);
+        SfxResources.cellSelected[Math.min(num, SfxResources.cellSelected.length - 1)].play(this.SelectedSfxVolume * this.MasterVolumeMultiplier);
     }
 
     static playEnemyEnragedSfx() {
-        SfxResources.enemyEnraged[rand.integer(0, SfxResources.enemyEnraged.length - 1)].play(this.EnemyEnragedSfxVolume);
+        SfxResources.enemyEnraged[rand.integer(0, SfxResources.enemyEnraged.length - 1)].play(this.EnemyEnragedSfxVolume * this.MasterVolumeMultiplier);
     }
 
     static playExitOpenedSfx() {
-        // NYI
+        SfxResources.exitOpen[rand.integer(0, SfxResources.exitOpen.length - 1)].play(this.ExitOpenSfxVolume * this.MasterVolumeMultiplier);
     }
 }

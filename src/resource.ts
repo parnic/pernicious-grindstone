@@ -78,6 +78,8 @@ import enemyImpactSfx07 from '../sound/sfx/impacts/Seq 2.27 Hit 1 96 HK1.wav'
 import enemyImpactSfx08 from '../sound/sfx/impacts/Seq1.15 Hit 1 96 HK1.wav'
 import enemyImpactSfx09 from '../sound/sfx/impacts/Seq1.15 Hit 3 96 HK1.wav'
 
+import exitOpenSfx01 from '../sound/sfx/exit-open/zapsplat_multimedia_game_sound_door_open_magical_unlock_level_secret_001_73548.mp3'
+
 import bgm01 from '../sound/music/chip-mode-danijel-zambo-main-version-1431-02-05.mp3'
 import bgm02 from '../sound/music/game-over-danijel-zambo-main-version-1394-02-03.mp3'
 import bgm03 from '../sound/music/itty-bitty-8-bit-kevin-macleod-main-version-7983-03-13.mp3'
@@ -148,6 +150,9 @@ export const SfxResources = {
     new Sound(enemyImpactSfx07),
     new Sound(enemyImpactSfx08),
     new Sound(enemyImpactSfx09),
+  ],
+  exitOpen: [
+    new Sound(exitOpenSfx01),
   ],
   reachedExit: [
     new Sound(reachedExitSfx),
