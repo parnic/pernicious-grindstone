@@ -2,7 +2,8 @@ import { TiledResource } from "@excaliburjs/plugin-tiled";
 import { SceneActivationContext } from "excalibur";
 import { GameScene, GameSceneEvents } from "./game-scene";
 import { html } from "../utilities/html";
-import { PlayerEvents } from "../actors/player";
+import { PlayerEvents, TurnEndedEvent } from "../actors/player";
+import { Constants } from "../utilities/constants";
 
 export type TutorialSceneConfigArgs = {
     showTutorial?: boolean;
@@ -18,11 +19,14 @@ export class TutorialScene extends GameScene {
     ];
 
     private readonly _tutorialExitOpenMessage = "The exit is open! Move onto the exit to finish the level!"
+    private readonly _tutorialChainExtenderMessage = "Your 10+ chain has spawned a gem. Use this to extend your chain to different-colored enemies!"
 
     private readonly _seenTutorialKey = 'seenTutorial';
 
     private _tutorialElement: HTMLElement;
     private _showTutorial: boolean = true;
+
+    private _hasShownGemMessage: boolean = false;
 
     private _onClickHandler = () => this.onClick();
 
@@ -49,6 +53,11 @@ export class TutorialScene extends GameScene {
         document.addEventListener('click', this._onClickHandler);
         this.engine.input.pointers.primary.on('down', this._onClickHandler);
 
+        this.player!.on(PlayerEvents.TurnEnded, evt => {
+            if ((evt as TurnEndedEvent).pathLength >= Constants.MinPathSizeToSpawnGem) {
+                this.notifyGemSpawned();
+            }
+        });
         this.player!.on(PlayerEvents.NextTurnStarted, () => this.goNextTutorialPhase());
         this.events.once(GameSceneEvents.TargetScoreReached, () => this.notifyDoorOpen());
 
@@ -98,5 +107,15 @@ export class TutorialScene extends GameScene {
     private notifyDoorOpen() {
         this._tutorialElement.textContent = this._tutorialExitOpenMessage;
         html.unhideElement(this._tutorialElement);
+    }
+
+    private notifyGemSpawned() {
+        if (this._hasShownGemMessage) {
+            return;
+        }
+
+        this._tutorialElement.textContent = this._tutorialChainExtenderMessage;
+        html.unhideElement(this._tutorialElement);
+        this._hasShownGemMessage = true;
     }
 }

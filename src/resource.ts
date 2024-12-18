@@ -84,24 +84,25 @@ import exitOpenSfx01 from '../sound/sfx/exit-open/zapsplat_multimedia_game_sound
 import bgm01 from '../sound/music/chip-mode-danijel-zambo-main-version-1431-02-05.mp3'
 import bgm02 from '../sound/music/game-over-danijel-zambo-main-version-1394-02-03.mp3'
 import bgm03 from '../sound/music/itty-bitty-8-bit-kevin-macleod-main-version-7983-03-13.mp3'
+import { Constants } from "./utilities/constants";
 
 export const Resources = {
   stage01: new TiledResource(stage01Path, {
-    startZIndex: -10,
+    startZIndex: Constants.BackgroundZIndex,
     pathMap: [
       { path: 'tiles_packed.png', output: spriteSheet },
       { path: 'kenney-pixel-shmup.tsx', output: tsxPath }
     ]
   }),
   stage02: new TiledResource(stage02Path, {
-    startZIndex: -10,
+    startZIndex: Constants.BackgroundZIndex,
     pathMap: [
       { path: 'tiles_packed.png', output: spriteSheet },
       { path: 'kenney-pixel-shmup.tsx', output: tsxPath }
     ]
   }),
   stage03: new TiledResource(stage03Path, {
-    startZIndex: -10,
+    startZIndex: Constants.BackgroundZIndex,
     pathMap: [
       { path: 'tiles_packed.png', output: spriteSheet },
       { path: 'kenney-pixel-shmup.tsx', output: tsxPath }

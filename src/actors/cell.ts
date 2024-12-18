@@ -1,10 +1,11 @@
 import { Actor, ActorArgs, Color, Engine, Rectangle } from "excalibur";
 import { GameScene } from "../scenes/game-scene";
 import { PlayerCharacter } from "./player";
-import { EnemyCharacter, Hoverable, isHoverable } from "./enemy";
+import { Hoverable, isHoverable } from "./enemy";
 
 export interface CellOccupant extends Actor {
     canHover(pathTail: Cell): boolean
+    get cell(): Cell
 }
 
 export type CellArgs = ActorArgs & {
@@ -81,7 +82,7 @@ export class Cell extends Actor implements Hoverable {
 
     pointerdown(): void {
         if ((isHoverable(this.occupant) && this.occupant.hovered) || this.occupant instanceof PlayerCharacter) {
-            this.gameScene.player?.select(this.occupant as EnemyCharacter);
+            this.gameScene.player?.select(this.occupant);
         }
     }
 

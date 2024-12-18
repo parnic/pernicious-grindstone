@@ -7,6 +7,8 @@ import { PlayerCharacter } from "./player";
 import { Exit } from "./exit";
 import { getOutlineMaterial } from "../materials/outline";
 import { Audio } from "../utilities/audio";
+import { ChainExtender } from "./chain-extender";
+import { Constants } from "../utilities/constants";
 
 export type EnemyCharacterArgs = ActorArgs & {
     enemyType: number;
@@ -179,7 +181,7 @@ export class EnemyCharacter extends Actor implements Hoverable, CellOccupant {
     constructor(config?: EnemyCharacterArgs) {
         super(config);
 
-        this.z = 10;
+        this.z = Constants.EnemyZIndex;
 
         this.enemyType = config?.enemyType ?? 0;
         this._cell = config?.cell!;
@@ -199,7 +201,7 @@ export class EnemyCharacter extends Actor implements Hoverable, CellOccupant {
             name: `enemy-${this.name}-face`,
             x: 0,
             y: 0,
-            z: 15,
+            z: Constants.EnemyCosmeticsZIndex,
             width: 9,
             height: 6,
             collisionType: CollisionType.PreventCollision,
@@ -327,7 +329,10 @@ export class EnemyCharacter extends Actor implements Hoverable, CellOccupant {
                 pathTail = this.gameScene.player!.path[this.gameScene.player!.path.length - 2];
             }
         }
-        if (pathTail.occupant instanceof PlayerCharacter || (pathTail.occupant as EnemyCharacter)?.enemyType === this.enemyType) {
+        if (this.selected ||
+            pathTail.occupant instanceof PlayerCharacter ||
+            pathTail.occupant instanceof ChainExtender ||
+            (pathTail.occupant as EnemyCharacter)?.enemyType === this.enemyType) {
             this.setSpritesColor(Color.White);
         } else {
             this.setSpritesColor(this.fadedColor);
@@ -418,10 +423,14 @@ export class EnemyCharacter extends Actor implements Hoverable, CellOccupant {
             return true;
         }
 
-        const pathTailOccupant = pathTail.occupant as EnemyCharacter | PlayerCharacter;
-        const pathTailEnemyType = (pathTailOccupant as EnemyCharacter)?.enemyType;
+        if (pathTail.occupant instanceof ChainExtender) {
+            return true;
+        }
+
+        const pathTailEnemy = pathTail.occupant as EnemyCharacter;
+        const pathTailEnemyType = pathTailEnemy instanceof PlayerCharacter ? this.enemyType : pathTailEnemy.enemyType;
         const occupantEnemyType = this.enemyType;
-        const occupantSameTypeAsPathTail = (pathTailOccupant instanceof PlayerCharacter) || pathTailEnemyType === occupantEnemyType;
+        const occupantSameTypeAsPathTail = pathTailEnemyType === occupantEnemyType;
         return occupantSameTypeAsPathTail;
     }
 }

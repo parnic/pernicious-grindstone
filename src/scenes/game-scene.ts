@@ -376,8 +376,6 @@ export class GameScene extends Scene {
       cell: c,
     });
 
-    c.occupant = enemy;
-
     this.add(enemy);
 
     // todo: they really should fall in rows to look nicer (filling in from the bottom up).
