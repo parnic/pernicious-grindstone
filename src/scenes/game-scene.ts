@@ -81,15 +81,15 @@ export class GameScene extends Scene {
     return this._targetScore;
   }
 
-  private readonly _enragedMaxPerTurn: number = 3;
+  private _enragedMaxPerTurn: number = 3;
   private readonly _enragedThreatIncreaseTurnsMinor = 2;
-  private readonly _enragedThreatIncreaseTurnsMajor = 4;
-  private readonly _enragedChanceMinIncrease: number = 0.1;
-  private readonly _enragedChanceMaxIncrease: number = 0.2;
+  private readonly _enragedThreatIncreaseTurnsMajor = 3;
+  private readonly _enragedChanceMinIncrease: number = 0.15;
+  private readonly _enragedChanceMaxIncrease: number = 0.25;
   private _numToEnrageMin: number = 0;
   private _numToEnrageMax: number = 0;
-  private _enragedChanceMin: number = 0;
-  private _enragedChanceMax: number = 0;
+  private _enragedChanceMin: number = 0.2;
+  private _enragedChanceMax: number = 0.4;
   private _turn: number = 1;
 
   protected _enemyCounter: number = 0;
@@ -144,6 +144,8 @@ export class GameScene extends Scene {
 
       return a.pos.x - b.pos.x;
     });
+
+    this._enragedMaxPerTurn = Math.trunc(this.cells.length / 15);
 
     engine.input.pointers.primary.on('down', () => {
       this._pointerDown = true;

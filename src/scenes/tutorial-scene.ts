@@ -80,6 +80,14 @@ export class TutorialScene extends GameScene {
         }
     }
 
+    protected tryEnrageEnemies(numToEnrage: number, enragedChanceMin: number, enragedChanceMax: number): void {
+        if (this._showTutorial && this._tutorialPhase < 2) {
+            return;
+        }
+
+        super.tryEnrageEnemies(numToEnrage, enragedChanceMin, enragedChanceMax);
+    }
+
     private notifyDoorOpen() {
         this._tutorialElement.textContent = this._tutorialExitOpenMessage;
         html.unhideElement(this._tutorialElement);
