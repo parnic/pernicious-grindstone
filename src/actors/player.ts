@@ -342,7 +342,6 @@ export class PlayerCharacter extends Actor implements CellOccupant {
                 .callMethod(() => this.gameScene.events.emit(GameSceneEvents.CompleteStage));
         } else {
             const turnEndedPromise = moveChain.callMethod(() => {
-                // todo: if our final cell is the exit, play the exit fanfare and move on.
                 this._cell.occupant = undefined;
                 this._cell = this.path[this.path.length - 1];
                 this._cell.occupant = this;
@@ -361,7 +360,6 @@ export class PlayerCharacter extends Actor implements CellOccupant {
                     this.health -= t.numAttacks;
                     Audio.playImpactSfx();
                     if (this.health > 0) {
-                        // todo: this isn't working. find a damage effect that looks good.
                         moveChain = moveChain.repeat(ctx => {
                             ctx.flash(Color.White, 50).delay(50);
                         }, 4);

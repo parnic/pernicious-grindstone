@@ -151,10 +151,6 @@ export class GameScene extends Scene {
       this._availableEnemyTypes = JSON.parse(availableEnemyTypesProp.value as string);
     }
 
-    // todo: allow each map to specify what enemy types are valid.
-    // for example: on the green map, want to make sure we don't use any green or nearly-green enemy skins, but
-    // on the brown map, probably want to avoid red enemies and use green-ish instead.
-
     html.hideElement(this.clearElement);
     html.hideElement(this.healthDepletedElement);
     html.hideElement(this.youWinElement);
