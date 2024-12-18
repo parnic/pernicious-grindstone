@@ -26,11 +26,8 @@ You must have the Chrome browser installed to have debug functionality.
 
 ## Credits
 
-* Author: [Parnic](https://github.com/parnic)
+* Programming, stage design: [Parnic](https://github.com/parnic)
 * Engine: [Excalibur.js](https://excaliburjs.com)
 * Art: [Kenney.nl](https://kenney.nl) and Parnic's lovely wife
-* SFX: [Parnic](https://github.com/parnic), Some sound from Zapsplat.com, mixkit.co, sonniss.com
-* Music:
-  * Music from #Uppbeat (free for Creators!): <https://uppbeat.io/t/danijel-zambo/game-over>
-  * Music from #Uppbeat (free for Creators!): <https://uppbeat.io/t/kevin-macleod/itty-bitty-8-bit>
-  * Music from #Uppbeat (free for Creators!): <https://uppbeat.io/t/danijel-zambo/chip-mode>
+* SFX: [Parnic](https://github.com/parnic). Some sound from Zapsplat.com, mixkit.co, sonniss.com
+* Music from #Uppbeat (free for Creators!): <https://uppbeat.io/t/danijel-zambo/game-over>, <https://uppbeat.io/t/kevin-macleod/itty-bitty-8-bit>, <https://uppbeat.io/t/danijel-zambo/chip-mode>
