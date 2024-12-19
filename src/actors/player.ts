@@ -1,5 +1,4 @@
-import { ActionContext, Actor, ActorArgs, ActorEvents, CollisionType, Color, EasingFunctions, ElasticToActorStrategy, Engine, EventEmitter, GameEvent, Keys, Line, Logger, toRadians, Vector } from "excalibur";
-import { ResourceManager } from "../utilities/resource-manager";
+import { ActionContext, Actor, ActorArgs, ActorEvents, CollisionType, Color, EasingFunctions, ElasticToActorStrategy, Engine, EventEmitter, GameEvent, Keys, Line, Logger, toRadians, vec, Vector } from "excalibur";
 import { Cell, CellOccupant } from "./cell";
 import { GameScene, GameSceneEvents, TargetScoreReachedEvent } from "../scenes/game-scene";
 import { EnemyCharacter, isHoverable } from "./enemy";
@@ -9,6 +8,7 @@ import { html } from "../utilities/html";
 import { Audio } from "../utilities/audio";
 import { ChainExtender } from "./chain-extender";
 import { Constants } from "../utilities/constants";
+import { ImageResources } from "../resource";
 
 type PlayerEvents = {
     HealthDepleted: HealthDepletedEvent;
@@ -42,6 +42,17 @@ export type PlayerCharacterArgs = ActorArgs & {
     cell: Cell;
 }
 
+enum PlayerFaces {
+    Happy1 = 'happy1',
+    Happy2 = 'happy2',
+    Worried = 'worried',
+    Mischievous = 'mischievous',
+    Annoyed = 'annoyed',
+    Relieved = 'relieved',
+    Goofy = 'goofy',
+    Miffed = 'miffed',
+}
+
 export class PlayerCharacter extends Actor implements CellOccupant {
     public events = new EventEmitter<ActorEvents & PlayerEvents>();
 
@@ -54,6 +65,13 @@ export class PlayerCharacter extends Actor implements CellOccupant {
     private targetScoreGroup: HTMLElement;
     private scoreTextGroup: HTMLElement;
     private playerHealthIndicator: HTMLElement;
+
+    private _faceActor: Actor;
+    private _usingFace: string = '';
+
+    private animDeltaMs: number = 0;
+    private lastAnimTick: number = 0;
+    private animFrame: number = 0;
 
     private _score: number = 0;
     public get score() {
@@ -122,6 +140,17 @@ export class PlayerCharacter extends Actor implements CellOccupant {
 
         this.z = Constants.PlayerZIndex;
 
+        this._faceActor = new Actor({
+            name: `player-face`,
+            x: 0,
+            y: 0,
+            z: Constants.PlayerCosmeticsZIndex,
+            width: this.width,
+            height: this.height,
+            collisionType: CollisionType.PreventCollision,
+        });
+        this.addChild(this._faceActor);
+
         this._cell = config?.cell!;
         this._cell.occupant = this;
 
@@ -153,7 +182,7 @@ export class PlayerCharacter extends Actor implements CellOccupant {
     }
 
     public onInitialize(_engine: Engine): void {
-        this.graphics.use(ResourceManager.getPlayerSprite());
+        this.initializeGraphics();
 
         html.unhideElement(this.uiRoot);
 
@@ -169,7 +198,85 @@ export class PlayerCharacter extends Actor implements CellOccupant {
         this.updateHealthUi();
     }
 
-    public onPostUpdate(_engine: Engine, _delta: number): void {
+    private initializeGraphics() {
+        const bodySprite = ImageResources.player.body.toSprite();
+        bodySprite.width = this.width;
+        bodySprite.height = this.height;
+        this.graphics.use(bodySprite);
+
+        let faceSprite = ImageResources.player.faceHappy1.toSprite();
+        faceSprite.width = this.width;
+        faceSprite.height = this.height;
+        this._faceActor.graphics.add(PlayerFaces.Happy1, faceSprite);
+
+        faceSprite = ImageResources.player.faceHappy2.toSprite();
+        faceSprite.width = this.width;
+        faceSprite.height = this.height;
+        this._faceActor.graphics.add(PlayerFaces.Happy2, faceSprite);
+
+        faceSprite = ImageResources.player.faceAnnoyed.toSprite();
+        faceSprite.width = this.width;
+        faceSprite.height = this.height;
+        this._faceActor.graphics.add(PlayerFaces.Annoyed, faceSprite);
+
+        faceSprite = ImageResources.player.faceGoofy.toSprite();
+        faceSprite.width = this.width;
+        faceSprite.height = this.height;
+        this._faceActor.graphics.add(PlayerFaces.Goofy, faceSprite);
+
+        faceSprite = ImageResources.player.faceMiffed.toSprite();
+        faceSprite.width = this.width;
+        faceSprite.height = this.height;
+        this._faceActor.graphics.add(PlayerFaces.Miffed, faceSprite);
+
+        faceSprite = ImageResources.player.faceMischievous.toSprite();
+        faceSprite.width = this.width;
+        faceSprite.height = this.height;
+        this._faceActor.graphics.add(PlayerFaces.Mischievous, faceSprite);
+
+        faceSprite = ImageResources.player.faceRelieved.toSprite();
+        faceSprite.width = this.width;
+        faceSprite.height = this.height;
+        this._faceActor.graphics.add(PlayerFaces.Relieved, faceSprite);
+
+        faceSprite = ImageResources.player.faceWorried.toSprite();
+        faceSprite.width = this.width;
+        faceSprite.height = this.height;
+        this._faceActor.graphics.add(PlayerFaces.Worried, faceSprite);
+
+        this.useFace(PlayerFaces.Happy1);
+    }
+
+    private useFace(face: PlayerFaces) {
+        if (this._usingFace === face) {
+            return;
+        }
+
+        this._usingFace = face;
+        this._faceActor.graphics.use(this._usingFace);
+    }
+
+    private updateFaceSprite(_delta: number) {
+        this.lastAnimTick += _delta;
+        if (this.lastAnimTick >= this.animDeltaMs) {
+            this.lastAnimTick = 0;
+            this.animFrame = (this.animFrame + 1) % 2;
+
+            if (this.animFrame === 0 || !rand.bool()) {
+                this._faceActor.pos = vec(0, 0);
+            } else {
+                this._faceActor.pos = vec(rand.integer(-1, 1), rand.integer(-1, 1));
+            }
+
+            this.pickNextAnimDelta();
+        }
+    }
+
+    private pickNextAnimDelta() {
+        this.animDeltaMs = rand.integer(450, 750);
+    }
+
+    private updatePathLines(_engine: Engine) {
         if (this._pathLines.length === this.path.length) {
             return;
         }
@@ -204,6 +311,29 @@ export class PlayerCharacter extends Actor implements CellOccupant {
         }
     }
 
+    public onPostUpdate(_engine: Engine, _delta: number): void {
+        this.updateFaceSprite(_delta);
+        this.updatePathLines(_engine);
+    }
+
+    private onPostSelect() {
+        Audio.playSelectedSfx(this.path.length);
+        this.updateScoreUi();
+        this.postActionUpdateFace();
+    }
+
+    private postActionUpdateFace() {
+        const tailNeighbors = this.pathTail.getOrthogonalNeighbors();
+        const enragedNeighbors = tailNeighbors.filter(c => c.occupant instanceof EnemyCharacter && (c.occupant as EnemyCharacter).enraged && !(c.occupant as EnemyCharacter).selected);
+        if (enragedNeighbors.length > 0) {
+            this.useFace(PlayerFaces.Worried);
+        } else if (this.path.length > 0) {
+            this.useFace(PlayerFaces.Mischievous);
+        } else {
+            this.useFace(PlayerFaces.Happy1);
+        }
+    }
+
     public select(enemy?: CellOccupant) {
         if (enemy instanceof PlayerCharacter) {
             for (let c of this.path) {
@@ -213,8 +343,7 @@ export class PlayerCharacter extends Actor implements CellOccupant {
             }
 
             this.path.length = 0;
-            Audio.playSelectedSfx(this.path.length);
-            this.updateScoreUi();
+            this.onPostSelect();
             return;
         }
 
@@ -233,8 +362,7 @@ export class PlayerCharacter extends Actor implements CellOccupant {
                     c.occupant.pointerdown();
                 }
             }
-            this.updateScoreUi();
-            Audio.playSelectedSfx(this.path.length);
+            this.onPostSelect();
             return;
         }
 
@@ -243,8 +371,7 @@ export class PlayerCharacter extends Actor implements CellOccupant {
             enemy.pointerdown();
         }
 
-        this.updateScoreUi();
-        Audio.playSelectedSfx(this.path.length);
+        this.onPostSelect();
     }
 
     private updateScoreUi() {
@@ -350,6 +477,7 @@ export class PlayerCharacter extends Actor implements CellOccupant {
         if (this.pathTail.occupant instanceof Exit) {
             this.actions
                 .callMethod(() => this.gameScene.events.emit(GameSceneEvents.ExitReached))
+                .callMethod(() => this.useFace(PlayerFaces.Relieved))
                 .delay(3000)
                 .callMethod(() => this.gameScene.events.emit(GameSceneEvents.CompleteStage));
         } else {
@@ -378,9 +506,15 @@ export class PlayerCharacter extends Actor implements CellOccupant {
                     this.health -= t.numAttacks;
                     Audio.playImpactSfx();
                     if (this.health > 0) {
-                        moveChain = moveChain.repeat(ctx => {
-                            ctx.flash(Color.White, 50).delay(50);
-                        }, 4);
+                        moveChain = moveChain.callMethod(
+                            () => this.useFace(PlayerFaces.Annoyed)
+                        ).repeat(
+                            ctx => {
+                                ctx.flash(Color.White, 50).delay(50);
+                            }, 4
+                        ).callMethod(
+                            () => this.useFace(PlayerFaces.Happy1)
+                        );
                     }
                 }
 
@@ -399,6 +533,7 @@ export class PlayerCharacter extends Actor implements CellOccupant {
                 }).delay(
                     this.gameScene.enemyRefillDurationMs
                 ).callMethod(() => {
+                    this.postActionUpdateFace();
                     this.events.emit(PlayerEvents.NextTurnStarted);
                 });
             });

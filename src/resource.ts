@@ -19,6 +19,16 @@ import imageEnemyFaceDead from '../img/kenney-shape-characters/face_j.png'
 import imageEnemyFaceSurprisedBlinking from '../img/kenney-shape-characters/face_k.png'
 import imageEnemyFaceHopefulBlinking from '../img/kenney-shape-characters/face_l.png'
 
+import imagePlayerBody from '../img/player/body.png'
+import imagePlayerFaceAnnoyed from '../img/player/face-annoyed.png'
+import imagePlayerFaceGoofy from '../img/player/face-goofy.png'
+import imagePlayerFaceHappy1 from '../img/player/face-happy1.png'
+import imagePlayerFaceHappy2 from '../img/player/face-happy2.png'
+import imagePlayerFaceMiffed from '../img/player/face-miffed.png'
+import imagePlayerFaceMischievous from '../img/player/face-mischievous.png'
+import imagePlayerFaceRelieved from '../img/player/face-relieved.png'
+import imagePlayerFaceWorried from '../img/player/face-worried.png'
+
 import stage01Path from '../res/stage-01.tmx';
 import stage02Path from '../res/stage-02.tmx';
 import stage03Path from '../res/stage-03.tmx';
@@ -133,7 +143,18 @@ export const ImageResources = {
     surprised: new ImageSource(imageEnemyFaceSurprised),
     surprisedBlinking: new ImageSource(imageEnemyFaceSurprisedBlinking),
     dead: new ImageSource(imageEnemyFaceDead),
-  }
+  },
+  player: {
+    body: new ImageSource(imagePlayerBody),
+    faceAnnoyed: new ImageSource(imagePlayerFaceAnnoyed),
+    faceGoofy: new ImageSource(imagePlayerFaceGoofy),
+    faceHappy1: new ImageSource(imagePlayerFaceHappy1),
+    faceHappy2: new ImageSource(imagePlayerFaceHappy2),
+    faceMiffed: new ImageSource(imagePlayerFaceMiffed),
+    faceMischievous: new ImageSource(imagePlayerFaceMischievous),
+    faceRelieved: new ImageSource(imagePlayerFaceRelieved),
+    faceWorried: new ImageSource(imagePlayerFaceWorried),
+  },
 }
 
 export const SfxResources = {
