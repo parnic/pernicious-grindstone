@@ -1,4 +1,4 @@
-import { ActionContext, Actor, ActorArgs, ActorEvents, CollisionType, Color, EasingFunctions, ElasticToActorStrategy, Engine, EventEmitter, GameEvent, Keys, Line, Logger, Vector } from "excalibur";
+import { ActionContext, Actor, ActorArgs, ActorEvents, CollisionType, Color, EasingFunctions, ElasticToActorStrategy, Engine, EventEmitter, GameEvent, Keys, Line, Logger, toRadians, Vector } from "excalibur";
 import { ResourceManager } from "../utilities/resource-manager";
 import { Cell, CellOccupant } from "./cell";
 import { GameScene, GameSceneEvents, TargetScoreReachedEvent } from "../scenes/game-scene";
@@ -406,37 +406,57 @@ export class PlayerCharacter extends Actor implements CellOccupant {
     }
 
     private spawnGem(moveChain: ActionContext): ActionContext {
-        // todo: somehow get a delay added and an animation of the gem being thrown to its target location.
-        // we can probably assume the error case won't get hit and just always show a delay.
-        moveChain = moveChain.callMethod(() => {
+        let validTargetCells = this.gameScene.cells.filter(c =>
+            c.occupant instanceof EnemyCharacter &&
+            !this.path.includes(c) &&
             // don't pick a cell that's isolated off in a corner if we can avoid it. that's boring.
-            let validTargetCells = this.gameScene.cells.filter(c => c.occupant instanceof EnemyCharacter && !c.occupant.isKilled() && c.getNeighbors().length > 2);
-            if (validTargetCells.length === 0) {
-                validTargetCells = this.gameScene.cells.filter(c => !c.occupant);
-            }
-            if (!validTargetCells || validTargetCells.length === 0) {
-                Logger.getInstance().error("attempted to spawn gem, but no cells found to do so.");
-                return;
-            }
+            c.getNeighbors().length > 2
+        );
+        if (validTargetCells.length === 0) {
+            validTargetCells = this.gameScene.cells.filter(c => !c.occupant);
+        }
+        if (!validTargetCells || validTargetCells.length === 0) {
+            Logger.getInstance().error("attempted to spawn gem, but no cells found to do so.");
+            return moveChain;
+        }
 
-            validTargetCells.sort((a, b) => b.pos.squareDistance(this.pos) - a.pos.squareDistance(this.pos));
-            // grab something in the second quartile of the list so it's some distance away from the player but not too far.
-            const lowerBound = Math.trunc(validTargetCells.length / 4);
-            const upperBound = lowerBound * 2;
-            const targetCell = validTargetCells[rand.integer(lowerBound, upperBound)];
+        validTargetCells.sort((a, b) => b.pos.squareDistance(this.pos) - a.pos.squareDistance(this.pos));
+        // grab something in the second quartile of the list so it's some distance away from the player but not too far.
+        const lowerBound = Math.trunc(validTargetCells.length / 4);
+        const upperBound = lowerBound * 2;
+        const targetCell = validTargetCells[rand.integer(lowerBound, upperBound)];
+        const targetOccupant = targetCell.occupant;
 
-            targetCell.occupant!.kill();
-            const extender = new ChainExtender({
-                name: `chainextender-${targetCell.pos}`,
-                pos: targetCell.pos,
-                z: Constants.ChainExtenderZIndex,
-                width: this.width,
-                height: this.height,
-                collisionType: CollisionType.PreventCollision,
-                cell: targetCell,
-            })
-            this.scene?.add(extender);
-        });
+        const vecToTarget = targetCell.pos.sub(this.pos);
+        const playerTargetTrianglePoint = vecToTarget.rotate(toRadians(-45)).normalize();
+        const playerCurveOffset = playerTargetTrianglePoint.scale(vecToTarget.magnitude / 1.75);
+
+        const vecFromTarget = this.pos.sub(targetCell.pos);
+        const targetPlayerTrianglePoint = vecFromTarget.rotate(toRadians(45)).normalize();
+        const targetCurveOffset = targetPlayerTrianglePoint.scale(vecFromTarget.magnitude / 1.75);
+
+        const playerCurveControlPoint = this.pos.add(playerCurveOffset);
+        const targetCurveControlPoint = targetCell.pos.add(targetCurveOffset);
+
+        moveChain = moveChain.
+            callMethod(() => {
+                const extender = new ChainExtender({
+                    name: `chainextender-${targetCell.pos}`,
+                    pos: this.pos,
+                    width: this.width,
+                    height: this.height,
+                    collisionType: CollisionType.PreventCollision,
+                    cell: targetCell,
+                })
+                this.scene?.add(extender);
+
+                extender.actions.curveTo({
+                    controlPoints: [playerCurveControlPoint, targetCurveControlPoint, targetCell.pos],
+                    duration: 800,
+                }).callMethod(() => targetOccupant!.kill());
+            }).delay(
+                800
+            );
 
         return moveChain;
     }

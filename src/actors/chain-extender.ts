@@ -2,6 +2,7 @@ import { Actor, ActorArgs, Engine, Scene } from "excalibur";
 import { Cell, CellOccupant } from "./cell";
 import { Hoverable } from "./enemy";
 import { ResourceManager } from "../utilities/resource-manager";
+import { Constants } from "../utilities/constants";
 
 export type ChainExtenderArgs = ActorArgs & {
     cell: Cell;
@@ -46,6 +47,8 @@ export class ChainExtender extends Actor implements Hoverable, CellOccupant {
 
     constructor(args: ChainExtenderArgs) {
         super(args);
+
+        this.z = Constants.ChainExtenderZIndex;
 
         this._cell = args.cell;
         this._cell.occupant = this;
