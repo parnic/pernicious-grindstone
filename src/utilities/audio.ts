@@ -18,6 +18,7 @@ export class Audio {
     private static readonly SelectedSfxVolume = 0.4;
     private static readonly EnemyEnragedSfxVolume = 0.4;
     private static readonly ExitOpenSfxVolume = 1.0;
+    private static readonly GemPickupSfxVolume = 1.0;
 
     private static _rangeVolume: HTMLInputElement;
 
@@ -81,5 +82,9 @@ export class Audio {
 
     static playExitOpenedSfx() {
         this.playSound(SfxResources.exitOpen[rand.integer(0, SfxResources.exitOpen.length - 1)], this.ExitOpenSfxVolume);
+    }
+
+    static playGemPickupSfx() {
+        this.playSound(SfxResources.gemPickup[rand.integer(0, SfxResources.gemPickup.length - 1)], this.GemPickupSfxVolume);
     }
 }

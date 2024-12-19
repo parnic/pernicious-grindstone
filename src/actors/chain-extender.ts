@@ -3,6 +3,7 @@ import { Cell, CellOccupant } from "./cell";
 import { Hoverable } from "./enemy";
 import { ResourceManager } from "../utilities/resource-manager";
 import { Constants } from "../utilities/constants";
+import { Audio } from "../utilities/audio"
 
 export type ChainExtenderArgs = ActorArgs & {
     cell: Cell;
@@ -56,6 +57,10 @@ export class ChainExtender extends Actor implements Hoverable, CellOccupant {
 
     onInitialize(engine: Engine): void {
         this.graphics.use(ResourceManager.getGemSpriteAnimation());
+    }
+
+    onPreKill(_scene: Scene): void {
+        Audio.playGemPickupSfx();
     }
 
     onPostKill(_scene: Scene): void {

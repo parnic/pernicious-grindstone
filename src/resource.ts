@@ -99,6 +99,8 @@ import enemyImpactSfx09 from '../sound/sfx/impacts/Seq1.15 Hit 3 96 HK1.wav'
 
 import exitOpenSfx01 from '../sound/sfx/exit-open/zapsplat_multimedia_game_sound_door_open_magical_unlock_level_secret_001_73548.mp3'
 
+import gemPickupSfx01 from '../sound/sfx/gem/zapsplat_impacts_glass_piece_of_bottle_smash_break_with_hammer_002_84756.mp3'
+
 import bgm01 from '../sound/music/chip-mode-danijel-zambo-main-version-1431-02-05.mp3'
 import bgm02 from '../sound/music/game-over-danijel-zambo-main-version-1394-02-03.mp3'
 import bgm03 from '../sound/music/itty-bitty-8-bit-kevin-macleod-main-version-7983-03-13.mp3'
@@ -232,6 +234,9 @@ export const SfxResources = {
     new Sound(enemyEnragedSfx08),
     new Sound(enemyEnragedSfx09),
     new Sound(enemyEnragedSfx10),
+  ],
+  gemPickup: [
+    new Sound(gemPickupSfx01),
   ],
   bgm: [
     new Sound(bgm01),
