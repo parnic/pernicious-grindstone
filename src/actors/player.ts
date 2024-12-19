@@ -292,16 +292,16 @@ export class PlayerCharacter extends Actor implements CellOccupant {
         if (face === PlayerFaces.Happy1) {
             const mousePos = this.scene?.engine.input.pointers.primary.lastWorldPos;
             if (mousePos) {
-                const mouseIsHorizontallyCentered = mousePos.x >= this.pos.x - 20 && mousePos.x <= this.pos.x + 20;
+                const mouseIsHorizontallyCentered = mousePos.x >= this.pos.x - 10 && mousePos.x <= this.pos.x + 10;
                 const isNorth = mouseIsHorizontallyCentered && mousePos.y < this.pos.y;
                 const isSouth = mouseIsHorizontallyCentered && mousePos.y > this.pos.y;
-                const isWestern = mousePos.x < this.pos.x - 20;
-                const isEastern = mousePos.x > this.pos.x + 20;
-                const mouseIsVerticallyCentered = mousePos.y >= this.pos.y - 20 && mousePos.y <= this.pos.y + 20;
+                const isWestern = mousePos.x < this.pos.x - 10;
+                const isEastern = mousePos.x > this.pos.x + 10;
+                const mouseIsVerticallyCentered = mousePos.y >= this.pos.y - 10 && mousePos.y <= this.pos.y + 10;
                 const isWest = mouseIsVerticallyCentered && mousePos.x < this.pos.x;
                 const isEast = mouseIsVerticallyCentered && mousePos.x > this.pos.x;
-                const isNorthern = mousePos.y < this.pos.y - 20;
-                const isSouthern = mousePos.y > this.pos.y + 20;
+                const isNorthern = mousePos.y < this.pos.y - 10;
+                const isSouthern = mousePos.y > this.pos.y + 10;
 
                 if (isNorthern && isWestern) {
                     face = PlayerFaces.Happy1NW;
