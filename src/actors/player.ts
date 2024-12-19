@@ -369,8 +369,8 @@ export class PlayerCharacter extends Actor implements CellOccupant {
 
             let lineActor = new Actor({
                 name: `player-pathlinesegment-${i + 1}`,
-                x: source.pos.x,
-                y: source.pos.y,
+                x: source.pos.x + 1,
+                y: source.pos.y + 1,
                 z: Constants.PathLineZIndex,
                 collisionType: CollisionType.PreventCollision,
             });
