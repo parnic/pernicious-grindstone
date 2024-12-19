@@ -182,3 +182,6 @@ button:disabled {
 #volume-slider {
   width: 4rem;
 }
+#volume-slider:focus-visible {
+  outline: none;
+}
