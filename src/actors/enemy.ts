@@ -415,7 +415,9 @@ export class EnemyCharacter extends Actor implements Hoverable, CellOccupant {
     }
 
     onPostKill(_scene: Scene): void {
-        this.cell.occupant = undefined;
+        if (this.cell.occupant === this) {
+            this.cell.occupant = undefined;
+        }
     }
 
     canHover(pathTail: Cell): boolean {
