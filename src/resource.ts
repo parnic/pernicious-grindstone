@@ -23,6 +23,14 @@ import imagePlayerBody from '../img/player/body.png'
 import imagePlayerFaceAnnoyed from '../img/player/face-annoyed.png'
 import imagePlayerFaceGoofy from '../img/player/face-goofy.png'
 import imagePlayerFaceHappy1 from '../img/player/face-happy1.png'
+import imagePlayerFaceHappy1N from '../img/player/face-happy1-n.png'
+import imagePlayerFaceHappy1NW from '../img/player/face-happy1-nw.png'
+import imagePlayerFaceHappy1W from '../img/player/face-happy1-w.png'
+import imagePlayerFaceHappy1SW from '../img/player/face-happy1-sw.png'
+import imagePlayerFaceHappy1S from '../img/player/face-happy1-s.png'
+import imagePlayerFaceHappy1SE from '../img/player/face-happy1-se.png'
+import imagePlayerFaceHappy1E from '../img/player/face-happy1-e.png'
+import imagePlayerFaceHappy1NE from '../img/player/face-happy1-ne.png'
 import imagePlayerFaceHappy2 from '../img/player/face-happy2.png'
 import imagePlayerFaceMiffed from '../img/player/face-miffed.png'
 import imagePlayerFaceMischievous from '../img/player/face-mischievous.png'
@@ -149,6 +157,14 @@ export const ImageResources = {
     faceAnnoyed: new ImageSource(imagePlayerFaceAnnoyed),
     faceGoofy: new ImageSource(imagePlayerFaceGoofy),
     faceHappy1: new ImageSource(imagePlayerFaceHappy1),
+    faceHappy1N: new ImageSource(imagePlayerFaceHappy1N),
+    faceHappy1NW: new ImageSource(imagePlayerFaceHappy1NW),
+    faceHappy1W: new ImageSource(imagePlayerFaceHappy1W),
+    faceHappy1SW: new ImageSource(imagePlayerFaceHappy1SW),
+    faceHappy1S: new ImageSource(imagePlayerFaceHappy1S),
+    faceHappy1SE: new ImageSource(imagePlayerFaceHappy1SE),
+    faceHappy1E: new ImageSource(imagePlayerFaceHappy1E),
+    faceHappy1NE: new ImageSource(imagePlayerFaceHappy1NE),
     faceHappy2: new ImageSource(imagePlayerFaceHappy2),
     faceMiffed: new ImageSource(imagePlayerFaceMiffed),
     faceMischievous: new ImageSource(imagePlayerFaceMischievous),

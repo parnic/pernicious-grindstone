@@ -44,6 +44,14 @@ export type PlayerCharacterArgs = ActorArgs & {
 
 enum PlayerFaces {
     Happy1 = 'happy1',
+    Happy1N = 'happy1-n',
+    Happy1NW = 'happy1-nw',
+    Happy1W = 'happy1-w',
+    Happy1SW = 'happy1-sw',
+    Happy1S = 'happy1-s',
+    Happy1SE = 'happy1-se',
+    Happy1E = 'happy1-e',
+    Happy1NE = 'happy1-ne',
     Happy2 = 'happy2',
     Worried = 'worried',
     Mischievous = 'mischievous',
@@ -209,6 +217,39 @@ export class PlayerCharacter extends Actor implements CellOccupant {
         faceSprite.height = this.height;
         this._faceActor.graphics.add(PlayerFaces.Happy1, faceSprite);
 
+        faceSprite = ImageResources.player.faceHappy1N.toSprite();
+        faceSprite.width = this.width;
+        faceSprite.height = this.height;
+        this._faceActor.graphics.add(PlayerFaces.Happy1N, faceSprite);
+        faceSprite = ImageResources.player.faceHappy1NW.toSprite();
+        faceSprite.width = this.width;
+        faceSprite.height = this.height;
+        this._faceActor.graphics.add(PlayerFaces.Happy1NW, faceSprite);
+        faceSprite = ImageResources.player.faceHappy1W.toSprite();
+        faceSprite.width = this.width;
+        faceSprite.height = this.height;
+        this._faceActor.graphics.add(PlayerFaces.Happy1W, faceSprite);
+        faceSprite = ImageResources.player.faceHappy1SW.toSprite();
+        faceSprite.width = this.width;
+        faceSprite.height = this.height;
+        this._faceActor.graphics.add(PlayerFaces.Happy1SW, faceSprite);
+        faceSprite = ImageResources.player.faceHappy1S.toSprite();
+        faceSprite.width = this.width;
+        faceSprite.height = this.height;
+        this._faceActor.graphics.add(PlayerFaces.Happy1S, faceSprite);
+        faceSprite = ImageResources.player.faceHappy1SE.toSprite();
+        faceSprite.width = this.width;
+        faceSprite.height = this.height;
+        this._faceActor.graphics.add(PlayerFaces.Happy1SE, faceSprite);
+        faceSprite = ImageResources.player.faceHappy1E.toSprite();
+        faceSprite.width = this.width;
+        faceSprite.height = this.height;
+        this._faceActor.graphics.add(PlayerFaces.Happy1E, faceSprite);
+        faceSprite = ImageResources.player.faceHappy1NE.toSprite();
+        faceSprite.width = this.width;
+        faceSprite.height = this.height;
+        this._faceActor.graphics.add(PlayerFaces.Happy1NE, faceSprite);
+
         faceSprite = ImageResources.player.faceHappy2.toSprite();
         faceSprite.width = this.width;
         faceSprite.height = this.height;
@@ -248,6 +289,40 @@ export class PlayerCharacter extends Actor implements CellOccupant {
     }
 
     private useFace(face: PlayerFaces) {
+        if (face === PlayerFaces.Happy1) {
+            const mousePos = this.scene?.engine.input.pointers.primary.lastWorldPos;
+            if (mousePos) {
+                const mouseIsHorizontallyCentered = mousePos.x >= this.pos.x - 20 && mousePos.x <= this.pos.x + 20;
+                const isNorth = mouseIsHorizontallyCentered && mousePos.y < this.pos.y;
+                const isSouth = mouseIsHorizontallyCentered && mousePos.y > this.pos.y;
+                const isWestern = mousePos.x < this.pos.x - 20;
+                const isEastern = mousePos.x > this.pos.x + 20;
+                const mouseIsVerticallyCentered = mousePos.y >= this.pos.y - 20 && mousePos.y <= this.pos.y + 20;
+                const isWest = mouseIsVerticallyCentered && mousePos.x < this.pos.x;
+                const isEast = mouseIsVerticallyCentered && mousePos.x > this.pos.x;
+                const isNorthern = mousePos.y < this.pos.y - 20;
+                const isSouthern = mousePos.y > this.pos.y + 20;
+
+                if (isNorthern && isWestern) {
+                    face = PlayerFaces.Happy1NW;
+                } else if (isWest) {
+                    face = PlayerFaces.Happy1W;
+                } else if (isSouthern && isWestern) {
+                    face = PlayerFaces.Happy1SW;
+                } else if (isSouth) {
+                    face = PlayerFaces.Happy1S;
+                } else if (isSouthern && isEastern) {
+                    face = PlayerFaces.Happy1SE;
+                } else if (isEast) {
+                    face = PlayerFaces.Happy1E;
+                } else if (isNorthern && isEastern) {
+                    face = PlayerFaces.Happy1NE;
+                } else {
+                    face = PlayerFaces.Happy1N;
+                }
+            }
+        }
+
         if (this._usingFace === face) {
             return;
         }
@@ -269,6 +344,10 @@ export class PlayerCharacter extends Actor implements CellOccupant {
             }
 
             this.pickNextAnimDelta();
+        }
+
+        if (this._usingFace.startsWith(PlayerFaces.Happy1)) {
+            this.useFace(PlayerFaces.Happy1);
         }
     }
 
