@@ -18,13 +18,13 @@
   },
   "homepage": "https://parnic.github.io/pernicious-grindstone/",
   "dependencies": {
-    "@excaliburjs/plugin-tiled": "0.30.0",
-    "excalibur": "0.30.1"
+    "@excaliburjs/plugin-tiled": "^0.31",
+    "excalibur": "^0.31"
   },
   "devDependencies": {
     "buffer": "^6.0.3",
-    "parcel": "2.13.2",
+    "parcel": "^2.16.1",
     "prettier": "^3.4.2",
-    "typescript": "5.7.2"
+    "typescript": "^5.7.2"
   }
 }
