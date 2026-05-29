@@ -23,7 +23,7 @@
   },
   "devDependencies": {
     "buffer": "^6.0.3",
-    "parcel": "^2.16.1",
+    "parcel": "^2.16.4",
     "prettier": "^3.4.2",
     "typescript": "^5.7.2"
   }
